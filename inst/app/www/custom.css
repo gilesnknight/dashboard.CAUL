@@ -1,0 +1,60 @@
+
+/* Navbar Header */
+.navbar-default {
+    background-color: #008346 !important;
+  }
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover {
+    color: #fff;
+    font-weight: bold;
+    background-color: #016939;
+}
+.navbar-default .navbar-nav>li>a {
+  color: white;
+  font-weight: bold;
+}
+
+.navbar-default .navbar-nav>li>a:hover {
+  color: white;
+  background-color: #01753f;
+}
+
+/* Map sidebar */
+.well {
+    min-height: 20px;
+    padding: 0px;
+    margin-bottom: 20px;
+    background-color: #f5f5f5;
+    border: 1px solid #e3e3e3;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+}
+
+/* Tabs */
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+  cursor: default;
+  background-color: white;
+  color: black;
+  font-weight: bold;
+  border-top: 2.0px solid #016939;
+  border-bottom-color: transparent;
+}
+
+.nav-tabs>li>a {
+margin-right: 2px;
+color: black;
+font-weight: bold;
+line-height: 1.42857143;
+border: 1px solid #ddd;
+border-bottom: 0px solid transparent;
+border-top: 2px solid rgb(158, 158, 158);
+border-radius: 4px 4px 0 0;
+}
+
+.nav-tabs>li>a:hover {
+border-color: transparent;
+border: 1px solid #ddd;
+border-top: 2px solid #008346;
+border-bottom: 1px solid transparent;
+background-color: transparent;
+}
