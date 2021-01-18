@@ -63,11 +63,34 @@ app_ui <- function(request) {
                             leaflet::leafletOutput(outputId = "MEL_SSC_map", height = "calc(100vh - 80px)")
                           ),
                           mainPanel(
-                            # tabsetPanel(type = "tabs",
-                            #             tabPanel("Land Use",
-                            #                      plotlyOutput("melb_SSC_plot1", 
-                            #                                   height = 'auto')
-                            #                      ))
+                            tabsetPanel(type = "tabs",
+                                        tabPanel("Piecharts",
+                                                 fluidRow(
+                                                   column(6, plotly::plotlyOutput("MEL_vegtype_pie",
+                                                                                  height = 'calc(50vh - 57.5px)')),
+                                                   column(6, plotly::plotlyOutput("MEL_privpubl_pie",
+                                                                                  height = 'calc(50vh - 57.5px)'))
+                                                 ),
+                                                 fluidRow(
+                                                   column(6, plotly::plotlyOutput("MEL_LU_pie",
+                                                                                  height = 'calc(50vh - 57.5px)')),
+                                                   column(6, plotly::plotlyOutput("MEL_TrLU_pie",
+                                                                                  height = 'calc(50vh - 57.5px)'))
+                                                 )
+                                        ),
+                                        
+                                        tabPanel("Scatters",
+                                                 fluidRow(
+                                                   column(12, plotly::plotlyOutput("MEL_SSC_gross_scatter",
+                                                                                   height = 'calc(34vh - 46px)')),
+                                                   column(12, plotly::plotlyOutput("MEL_SSC_urban_scatter",
+                                                                                   height = 'calc(34vh - 46px)')),
+                                                   column(12, plotly::plotlyOutput("MEL_SSC_res_scatter",
+                                                                                   height = 'calc(34vh - 46px)'))
+                                                 )
+                                                 
+                                        )
+                            )
                           )
                         )
                ),
@@ -77,11 +100,34 @@ app_ui <- function(request) {
                             leaflet::leafletOutput(outputId = "SYD_SSC_map", height = "calc(100vh - 80px)")
                           ),
                           mainPanel(
-                            # tabsetPanel(type = "tabs",
-                            #             tabPanel("Land Use",
-                            #                      plotlyOutput("melb_SSC_plot1", 
-                            #                                   height = 'auto')
-                            #             ))
+                            tabsetPanel(type = "tabs",
+                                        tabPanel("Piecharts",
+                                                 fluidRow(
+                                                   column(6, plotly::plotlyOutput("SYD_vegtype_pie",
+                                                                                  height = 'calc(50vh - 57.5px)')),
+                                                   column(6, plotly::plotlyOutput("SYD_privpubl_pie",
+                                                                                  height = 'calc(50vh - 57.5px)'))
+                                                 ),
+                                                 fluidRow(
+                                                   column(6, plotly::plotlyOutput("SYD_LU_pie",
+                                                                                  height = 'calc(50vh - 57.5px)')),
+                                                   column(6, plotly::plotlyOutput("SYD_TrLU_pie",
+                                                                                  height = 'calc(50vh - 57.5px)'))
+                                                 )
+                                        ),
+                                        
+                                        tabPanel("Scatters",
+                                                 fluidRow(
+                                                   column(12, plotly::plotlyOutput("SYD_SSC_gross_scatter",
+                                                                                   height = 'calc(34vh - 46px)')),
+                                                   column(12, plotly::plotlyOutput("SYD_SSC_urban_scatter",
+                                                                                   height = 'calc(34vh - 46px)')),
+                                                   column(12, plotly::plotlyOutput("SYD_SSC_res_scatter",
+                                                                                   height = 'calc(34vh - 46px)'))
+                                                 )
+                                                 
+                                        )
+                            )
                           )
                         )
                ),

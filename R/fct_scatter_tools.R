@@ -61,7 +61,7 @@ scatter_quinline_label <-  function(df, uniqueID, clickID, groupID, xVals){
   selected_quintile_filter <- dplyr::filter(df, !!base::as.symbol(groupID) == selected_quintile)
   base::list(yref = "paper",
              x = base::mean(selected_quintile_filter[[xVals]]),
-             y = 1.04,
+             y = 1.07,
              text = base::paste0("Quintile mean (", base::round(base::mean(selected_quintile_filter[[xVals]]),1), "%)"),
              showarrow = FALSE)
 }

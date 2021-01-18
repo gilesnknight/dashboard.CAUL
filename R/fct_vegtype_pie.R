@@ -107,7 +107,7 @@ TrLU_pie <- function(df, pieVals){
                              '#FFED6F', '#5CE8C7', '#70AD47', '#264478', '#DAE3F3', 
                              '#E3FF8A'))
   ) %>% 
-    plotly::layout(title = "<b>Tree Land Use (%)</b>",
+    plotly::layout(title = '<b>Tree Land Use (%)</b>',
                    font = list(family = "Helvetica Neue", color = "black"),
                    xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
                    yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),

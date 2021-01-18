@@ -18,6 +18,8 @@
 usethis::use_package( "thinkr" )
 usethis::use_package( "magrittr" )
 usethis::use_package( "dplyr" )
+usethis::use_package( "class" )
+usethis::use_package( "KernSmooth" )
 usethis::use_pipe()
 
 #packages go here
