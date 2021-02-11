@@ -16,11 +16,186 @@
 
 filter_scatter <- function(df, columnsToPlot, uniqueID){
   df %>% 
-    sf::st_drop_geometry() %>% 
+    #sf::st_drop_geometry() %>% 
     dplyr::select(columnsToPlot) %>%
     dplyr::mutate(yaxis_ran = runif(sum(stats::complete.cases(uniqueID)), min = 1.98, max =
                                       2.02))
 }
+
+
+scatter_selected_data <- function(df, uniqueID, activeID){
+  df[df[[uniqueID]] ==  activeID, ]
+}
+
+scatter_selected_quint <- function(df, quintileNum){
+  df[[quintileNum]]
+}
+
+scatter_quint_data <- function(df, quintileNum, selectedQuintile, uniqueID, activeID){
+  base::subset(df, df[[quintileNum]] == selectedQuintile & df[[uniqueID]] != activeID)
+}
+
+scatter_remaining_data <- function(df, quintileNum, selectedQuintile){
+  base::subset(df, df[[quintileNum]] != selectedQuintile)
+}
+
+globalMean <- function(scatter_selected_data_vals, scatter_quint_data_vals, scatter_remaining_data_vals, column){
+  combined <- data.frame(combined = c(scatter_selected_data_vals[,column], scatter_quint_data_vals[,column], scatter_remaining_data_vals[,column]))
+  mean(combined$combined, na.rm = TRUE)
+}
+
+pseudoScatter <- function(scatter_selected_data,
+                          scatter_quint_data,
+                          scatter_remaining_data,
+                          uniqueID,
+                          xAxis,
+                          yAxis,
+                          structureName,
+                          density){
+  
+  plot <-  ggplot2::ggplot() +
+    ggplot2::geom_vline(
+      xintercept = base::mean(
+        (scatter_quint_data[[xAxis]]/100)), 
+      linetype="dashed", 
+      color = "#0433FF", 
+      size=1
+    ) +
+    ggplot2::geom_vline(
+      xintercept = (globalMean(
+        scatter_selected_data_vals = scatter_selected_data,
+        scatter_quint_data_vals = scatter_quint_data,
+        scatter_remaining_data_vals = scatter_remaining_data,
+        column = xAxis)/100), 
+      linetype="dashed", 
+      color = "#1f2224", 
+      size=1
+    ) +
+    ggiraph::geom_point_interactive(
+      ggplot2::aes(
+        x = scatter_remaining_data[[xAxis]]/100,
+        y = scatter_remaining_data[[yAxis]],
+        data_id = scatter_remaining_data[[uniqueID]],
+        tooltip = paste0(
+          "<b>",scatter_remaining_data[[structureName]],"</b>",
+          "<br>",
+          "Different density: ",
+          base::round(scatter_remaining_data[[density]],1),
+          "<br>",
+          "Tree canopy: ",
+          base::round(scatter_remaining_data[[xAxis]],1),
+          "%"
+        )
+      ),
+      color = "#a3a3a3",
+      alpha = 0.75,
+      size = 4,
+      shape=16,
+      stroke = 0
+    ) +
+    ggiraph::geom_point_interactive(
+      ggplot2::aes(
+        x = scatter_quint_data[[xAxis]]/100,
+        y = scatter_quint_data[[yAxis]],
+        data_id = scatter_quint_data[[uniqueID]],
+        tooltip = paste0(
+          "<b>",scatter_quint_data[[structureName]],"</b>",
+          "<br>",
+          "Similar density: ",
+          base::round(scatter_quint_data[[density]],1),
+          "<br>",
+          "Tree canopy: ",
+          base::round(scatter_quint_data[[xAxis]],1),
+          "%"
+        )
+      ),
+      color = "#4f84e0",
+      alpha = 0.75,
+      size = 4,
+      shape=16,
+      stroke = 0
+    ) +
+    ggiraph::geom_point_interactive(
+      ggplot2::aes(
+        x = scatter_selected_data[[xAxis]]/100,
+        y = scatter_selected_data[[yAxis]],
+        data_id = scatter_selected_data[[uniqueID]],
+        tooltip = paste0(
+          "<b>",scatter_selected_data[[structureName]],"</b>",
+          "<br>",
+          "Density: ",
+          base::round(scatter_selected_data[[density]],1),
+          "<br>",
+          "Tree canopy: ",
+          base::round(scatter_selected_data[[xAxis]],1),
+          "%"
+        )
+      ),
+      color = "#fc3003",
+      size = 4,
+      shape=16,
+      stroke = 0
+    ) +
+    ggplot2::labs(x = NULL, y = NULL) +
+    ggplot2::scale_x_continuous(label = scales::percent_format(accuracy = 1),
+                                expand = c(0, 0.065)) +
+    ggplot2::scale_y_continuous(expand = c(0, 0), limits = c(1.95, 2.1)) +
+    ggplot2::theme_classic() +
+    ggplot2::theme(
+      axis.title.y = ggplot2::element_blank(),
+      axis.text.y = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank(),
+      axis.line.y = ggplot2::element_blank(),
+    )
+  
+girafe <- ggiraph::girafe(
+            code = print(plot),
+            fonts = list(serif = "Helvetica"),
+            # width_svg = 9,
+            #height_svg = 8,
+            options = list(
+              ggiraph::opts_tooltip(
+                use_fill = TRUE,
+                css = "background-color:gray;
+                      color:white;
+                      font-style:italic;
+                      padding:10px;
+                      font-family: Helvetica;
+                      border-radius:5px;"
+              ),
+              ggiraph::opts_sizing(rescale = TRUE, width = 1)
+            )
+        )
+girafe <- ggiraph::girafe_options(
+  girafe,
+  ggiraph::opts_hover(css = "stroke:rgba(207, 207, 207, 0.6);
+                      r:3.5pt;")
+)  
+girafe
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Updates SSC scatter annotation from map click

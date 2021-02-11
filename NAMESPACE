@@ -2,10 +2,11 @@
 
 export("%>%")
 export(LGA_map)
-export(canopy_map)
+export(base_map)
+export(echarts_vegtype_pie)
 export(filter_scatter)
 export(run_app)
-export(vegtype_pie)
+export(vegtype_pie_proxy)
 import(dplyr)
 import(leaflet)
 import(shiny)

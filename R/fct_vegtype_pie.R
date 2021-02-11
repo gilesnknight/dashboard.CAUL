@@ -5,6 +5,31 @@
 #' @return A plotly piechart
 #' @export
 
+vegtype_pie_proxy <- function(plotlyID, df, pieVals){
+  plotly::plotlyProxy(plotlyID) %>%
+    plotly::plotlyProxyInvoke("deleteTraces", list(1)) %>%
+    plotly::plotlyProxyInvoke(
+      "addTraces",
+      list(
+        #df,
+        values = pieVals,
+        type = 'pie',
+        textposition = 'inside',
+        textinfo = 'label+percent',
+        hoverinfo = 'label+percent',
+        showlegend = FALSE,
+        source = 'perth_LGA_plot1',
+        labels = c('Grass:', 'Shrub:', 'Tree:', 'Non-veg:'),
+        marker = list(colors = c(
+          '#e5f5e0', '#a1d99b', '#31a354', '#f0f0f0'
+        ))
+      )
+    ) 
+}
+
+
+
+
 vegtype_pie <- function(df, pieVals){
   plotly::plot_ly(
     df,
@@ -59,10 +84,12 @@ privpubl_pie <- function(df, pieVals){
     plotly::config(displayModeBar = FALSE)
 }
 
+
+
 LU_pie <- function(df, pieVals){
   plotly::plot_ly(
     df,
-    values = ~ pieVals,
+    values = ~pieVals,
     type = 'pie',
     textposition = 'inside',
     textinfo = 'label+percent',

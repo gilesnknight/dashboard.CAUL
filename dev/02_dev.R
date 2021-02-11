@@ -20,6 +20,13 @@ usethis::use_package( "magrittr" )
 usethis::use_package( "dplyr" )
 usethis::use_package( "class" )
 usethis::use_package( "KernSmooth" )
+usethis::use_package( "sf" )
+usethis::use_package( "plotly" )
+usethis::use_package( "waiter" )
+usethis::use_package( "echarts4r" )
+usethis::use_package( "ggiraph" )
+usethis::use_package( "patchwork" )
+usethis::use_package( "gdtools" )
 usethis::use_pipe()
 
 #packages go here
@@ -37,6 +44,9 @@ golem::add_fct( "filter_piechart" )
 golem::add_fct( "vegtype_pie" ) 
 golem::add_fct( "canopy_map" ) 
 golem::add_fct( "scatter_tools" ) 
+golem::add_fct( "map_polygons" ) 
+golem::add_fct( "echarts" ) 
+golem::add_fct( "ggiraph" ) 
 
 golem::add_utils( "helpers" )
 

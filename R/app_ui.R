@@ -5,10 +5,20 @@
 #' @import shiny leaflet
 #' @noRd
 app_ui <- function(request) {
+  
+  tab <- function(...) {
+    shiny::tabPanel(..., class = "p-3 border border-top-0 rounded-bottom")
+  }
+  
   tagList(
     # Leave this function for adding external resources
+    
     golem_add_external_resources(),
     # List the first level UI elements here 
+    # waiter::use_waiter(),
+    # waiter::use_garcon(),
+    # 
+    
     
     navbarPage(windowTitle = "CAUL Dashboard",
                title = span(
@@ -19,39 +29,61 @@ app_ui <- function(request) {
                    style = "position:relative; top:-7px; left:-6px"
                  )
                ),
+               
                tabPanel("Perth",
                         sidebarLayout(
                           sidebarPanel(
+                            width = 5,
+                            # waiter::waiter_show_on_load(color = '#008346', tags$img(
+                            #   src="www/logo.png", 
+                            #   height=150,
+                            #   id = "myImage")),
+                            # waiter::waiter_hide_on_render("PER_SSC_map"),
+                            selectizeInput(
+                              'PER_SSC_dropdown', label = NULL, choices = PER_SSC_DATA$SSC_NAME16,
+                              options = list(maxOptions = 5)
+                            ),
                             leaflet::leafletOutput(outputId = "PER_SSC_map", height = "calc(100vh - 80px)")
+                            
+                            
                           ),
+                          
                           mainPanel(
+                            width = 7,
                             tabsetPanel(type = "tabs",
-                                        tabPanel("Piecharts",
-                                                 fluidRow(
-                                                   column(6, plotly::plotlyOutput("PER_vegtype_pie",
-                                                                                  height = 'calc(50vh - 57.5px)')),
-                                                   column(6, plotly::plotlyOutput("PER_privpubl_pie",
-                                                                                  height = 'calc(50vh - 57.5px)'))
-                                                          ),
-                                                 fluidRow(
-                                                   column(6, plotly::plotlyOutput("PER_LU_pie",
-                                                                                  height = 'calc(50vh - 57.5px)')),
-                                                   column(6, plotly::plotlyOutput("PER_TrLU_pie",
-                                                                                  height = 'calc(50vh - 57.5px)'))
-                                                 )
-                                                 ),
-                                        
-                                        tabPanel("Scatters",
-                                                 fluidRow(
-                                                   column(12, plotly::plotlyOutput("PER_SSC_gross_scatter",
-                                                                                  height = 'calc(34vh - 46px)')),
-                                                   column(12, plotly::plotlyOutput("PER_SSC_urban_scatter",
-                                                                                   height = 'calc(34vh - 46px)')),
-                                                   column(12, plotly::plotlyOutput("PER_SSC_res_scatter",
-                                                                                   height = 'calc(34vh - 46px)'))
-                                                 )
+                                        tabPanel("Land-use",
+                                                 ggiraph::girafeOutput("PER_psudoscatter",
+                                                                       height = 'calc(100vh - 80px)')
+                                                 # fluidRow(
+                                                 #   column(12, plotly::plotlyOutput("PER_SSC_gross_scatter",
+                                                 #                                   height = 'calc(34vh - 46px)')),
+                                                 #   column(12, plotly::plotlyOutput("PER_SSC_urban_scatter",
+                                                 #                                   height = 'calc(34vh - 46px)')),
+                                                 #   column(12, plotly::plotlyOutput("PER_SSC_res_scatter",
+                                                 #                                   height = 'calc(34vh - 46px)'))
+                                                 # )
                                                  
-                                        )
+                                        ),
+                                        tabPanel("Suburb comparison",ggiraph::girafeOutput("PER_piecharts",
+                                                                            height = 'calc(100vh - 80px)')
+                                                 # fluidRow(
+                                                 #   # column(6, echarts4r::echarts4rOutput("PER_vegtype_pie",
+                                                 #   #                                height = 'calc(50vh - 57.5px)')),
+                                                 #   # column(6, plotly::plotlyOutput("PER_vegtype_pie",
+                                                 #   #                                height = 'calc(50vh - 57.5px)')),
+                                                 #   column(6, ggiraph::girafeOutput("PER_piecharts"))
+                                                 #   # column(6, plotly::plotlyOutput("PER_privpubl_pie",
+                                                 #   #                                height = 'calc(50vh - 57.5px)'))
+                                                 #          ),
+                                                 # fluidRow(
+                                                 #   # column(6, plotly::plotlyOutput("PER_LU_pie",
+                                                 #   #                                height = 'calc(50vh - 57.5px)')),
+                                                 #   # column(6, plotly::plotlyOutput("PER_TrLU_pie",
+                                                 #   #                                height = 'calc(50vh - 57.5px)'))
+                                                 # )
+                                                 )
+                                        
+                                        
                                         )
                             )
                             
@@ -60,9 +92,16 @@ app_ui <- function(request) {
                tabPanel("Melbourne",
                         sidebarLayout(
                           sidebarPanel(
+                            width = 5,
+                            waiter::waiter_show_on_load(color = '#008346', tags$img(
+                              src="www/logo.png", 
+                              height=150,
+                              id = "myImage2")),
+                            waiter::waiter_hide_on_render("MEL_SSC_map"),
                             leaflet::leafletOutput(outputId = "MEL_SSC_map", height = "calc(100vh - 80px)")
                           ),
                           mainPanel(
+                            width = 7,
                             tabsetPanel(type = "tabs",
                                         tabPanel("Piecharts",
                                                  fluidRow(
@@ -97,9 +136,11 @@ app_ui <- function(request) {
                tabPanel("Sydney",
                         sidebarLayout(
                           sidebarPanel(
+                            width = 5,
                             leaflet::leafletOutput(outputId = "SYD_SSC_map", height = "calc(100vh - 80px)")
                           ),
                           mainPanel(
+                            width = 7,
                             tabsetPanel(type = "tabs",
                                         tabPanel("Piecharts",
                                                  fluidRow(
@@ -136,6 +177,8 @@ app_ui <- function(request) {
                         fillPage(titlePanel("About the dashboard"))
                )
                )
+    
+    
   
     
     )

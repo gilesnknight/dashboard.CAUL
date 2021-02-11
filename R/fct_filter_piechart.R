@@ -25,10 +25,15 @@
 # }
 
 
-filter_piechart <- function(df, uniqueID, clickID, columnsToPlot){
+filter_SSC <- function(df, uniqueID, clickID){
+  filtered_SSC <- df %>%
+    dplyr::filter(base::as.numeric(uniqueID) == base::as.numeric(clickID))
+  filtered_SSC
+}
+
+
+filter_piechart <- function(df, columnsToPlot){
   filtered_piechart <- df %>%
-    sf::st_drop_geometry() %>%
-    dplyr::filter(base::as.numeric(uniqueID) == base::as.numeric(clickID)) %>%
     dplyr::select(columnsToPlot) %>%
     tidyr::pivot_longer(cols = columnsToPlot,
                         names_to = "type",
@@ -37,6 +42,25 @@ filter_piechart <- function(df, uniqueID, clickID, columnsToPlot){
 }
 
 
+
+
+
+
+
+
+
+
+
+# filter_piechart <- function(df, uniqueID, clickID, columnsToPlot){
+#   filtered_piechart <- df %>%
+#     sf::st_drop_geometry() %>%
+#     dplyr::filter(base::as.numeric(uniqueID) == base::as.numeric(clickID)) %>%
+#     dplyr::select(columnsToPlot) %>%
+#     tidyr::pivot_longer(cols = columnsToPlot,
+#                         names_to = "type",
+#                         values_to = "percent")
+#   filtered_piechart
+# }
 
 
 
