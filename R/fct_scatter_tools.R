@@ -17,9 +17,9 @@
 filter_scatter <- function(df, columnsToPlot, uniqueID){
   df %>% 
     #sf::st_drop_geometry() %>% 
-    dplyr::select(columnsToPlot) %>%
-    dplyr::mutate(yaxis_ran = runif(sum(stats::complete.cases(uniqueID)), min = 1.98, max =
-                                      2.02))
+    dplyr::select(columnsToPlot) #%>%
+    # dplyr::mutate(yaxis_ran = runif(sum(stats::complete.cases(uniqueID)), min = 1.98, max =
+    #                                   2.02))
 }
 
 
@@ -55,21 +55,29 @@ pseudoScatter <- function(scatter_selected_data,
   
   plot <-  ggplot2::ggplot() +
     ggplot2::geom_vline(
-      xintercept = base::mean(
-        (scatter_quint_data[[xAxis]]/100)), 
-      linetype="dashed", 
-      color = "#0433FF", 
-      size=1
+      ggplot2::aes(
+        xintercept = base::mean(
+          (scatter_quint_data[[xAxis]]/100)) 
+        #linetype="Similar density average"
+      ),
+      color = "#0433FF",
+      size=1,
+      linetype="dashed",
+      show.legend = TRUE
     ) +
     ggplot2::geom_vline(
-      xintercept = (globalMean(
-        scatter_selected_data_vals = scatter_selected_data,
-        scatter_quint_data_vals = scatter_quint_data,
-        scatter_remaining_data_vals = scatter_remaining_data,
-        column = xAxis)/100), 
-      linetype="dashed", 
-      color = "#1f2224", 
-      size=1
+      ggplot2::aes(
+        xintercept = (globalMean(
+          scatter_selected_data_vals = scatter_selected_data,
+          scatter_quint_data_vals = scatter_quint_data,
+          scatter_remaining_data_vals = scatter_remaining_data,
+          column = xAxis)/100)
+        
+      ),
+      color = "#1f2224",
+      size=1,
+      linetype="dashed",
+      show.legend = TRUE
     ) +
     ggiraph::geom_point_interactive(
       ggplot2::aes(
@@ -136,10 +144,15 @@ pseudoScatter <- function(scatter_selected_data,
       shape=16,
       stroke = 0
     ) +
+    # ggplot2::scale_linetype_manual(name = NULL,
+    #                       values = c("Similar density average" = "dashed",
+    #                                  "Suburb average" = "solid")) +
+    # ggplot2::scale_linetype_manual(name = "Legend",
+    #                                values = c("Suburb average" = "solid")) +
     ggplot2::labs(x = NULL, y = NULL) +
     ggplot2::scale_x_continuous(label = scales::percent_format(accuracy = 1),
                                 expand = c(0, 0.065)) +
-    ggplot2::scale_y_continuous(expand = c(0, 0), limits = c(1.95, 2.1)) +
+    ggplot2::scale_y_continuous(expand = c(0, 0), limits = c(1.97, 2.03)) +
     ggplot2::theme_classic() +
     ggplot2::theme(
       axis.title.y = ggplot2::element_blank(),
@@ -151,8 +164,8 @@ pseudoScatter <- function(scatter_selected_data,
 girafe <- ggiraph::girafe(
             code = print(plot),
             fonts = list(serif = "Helvetica"),
-            # width_svg = 9,
-            #height_svg = 8,
+            width_svg = 9,
+            height_svg = 4,
             options = list(
               ggiraph::opts_tooltip(
                 use_fill = TRUE,

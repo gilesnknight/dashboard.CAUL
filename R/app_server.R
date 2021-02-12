@@ -15,6 +15,12 @@
 
 PER_SSC_GEO <- sf::st_read("inst/extdata/PER_SSC_GEO.gpkg")
 PER_SSC_DATA <- base::readRDS("inst/extdata/PER_SSC_DATA.rds")
+PER_SSC_DATA <- PER_SSC_DATA %>% 
+  dplyr::mutate(yaxis_ran = runif(nrow(PER_SSC_DATA), min = 1.98, max =
+                                    2.02))
+                  
+
+                  
 
 MEL_SSC_GEO <- sf::st_read("inst/extdata/MEL_SSC_GEO.gpkg")
 MEL_SSC_DATA <- base::readRDS("inst/extdata/MEL_SSC_DATA.rds")
@@ -59,12 +65,12 @@ app_server <- function( input, output, session ) {
   
 # PER SSC map
   
+  # Output PER basemap
   output$PER_SSC_map <- renderLeaflet({
     base_map()
-    
-    
   })
 
+  # Add PER SSC polygons to PER basemap
   map_add_polys(
     df = PER_SSC_GEO,
     mapID = "PER_SSC_map",
@@ -84,60 +90,8 @@ app_server <- function( input, output, session ) {
     viewZoom = 10
   )
   
-  
-
-# PER SSC Tree Shrub Grass Non-veg piechart
-
-  # PER_vegtype_pie_data <- reactive({
-  #   if(!is.null(PER_map_SSC$click) & (PER_map_SSC$click != "SSC_CODE16")){
-  #       filter_piechart(PER_SSC_DATA,
-  #                       uniqueID = PER_SSC_DATA$SSC_CODE16,
-  #                       clickID = PER_map_SSC$click,
-  #                       columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg')
-  #       )
-  #   }
-  #   else {
-  #     return(NULL)
-  #   }
-  # })
-
-  
-  
-  
-  
-  
- # Filters PER SSC data to row of selected SSC
-  # PER_SSC_pie_data <- reactive({
-  #   if(!is.null(PER_map_SSC$click) & (PER_map_SSC$click != "SSC_CODE16")){
-  #     filter_SSC(df = PER_SSC_DATA,
-  #                uniqueID = PER_SSC_DATA$SSC_CODE16,
-  #                clickID = PER_map_SSC$click)
-  #   }
-  #   else {
-  #     return(NULL)
-  #   }
-  # })
-  # 
-  # # Filters above to the desired columns for piechart
-  # PER_vegtype_pie_data <- reactive({
-  #   if(!is.null(PER_SSC_pie_data)) {
-  #     PER_vegtype_pie_data <- PER_SSC_pie_data()
-  #     filter_piechart(PER_vegtype_pie_data,
-  #                     columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg')
-  #     )
-  #   }
-  #   else {
-  #     return(NULL)
-  #   }
-  # })
-  
-  # Outputs base plot
-  
-  
-  
- 
-  
-  output$PER_psudoscatter <- ggiraph::renderGirafe({
+  # Output PER piecharts - deprecated
+  output$PER_piecharts <- ggiraph::renderGirafe({
     if (is.null(PER_map_SSC$click)) {
       
       # Default PER pie chart data - 51218
@@ -242,10 +196,11 @@ app_server <- function( input, output, session ) {
     }
   })
   
-  output$PER_piecharts <- ggiraph::renderGirafe({
+  # Output PER psudoscatter - depreceated
+  output$PER_psudoscatter <- ggiraph::renderGirafe({
     if (is.null(PER_map_SSC$click)) {
       
-      # Default PER pie chart data - 51218
+      # Default PER scatter chart data - 51218
       PER_SSC_scatter_data <- filter_scatter(
         PER_SSC_DATA,
         columnsToPlot = c(
@@ -257,7 +212,8 @@ app_server <- function( input, output, session ) {
           'UrbDwDens',
           'UrbDenQuin',
           'ResDwDens',
-          'ResDenQuin'
+          'ResDenQuin',
+          'yaxis_ran'
         ),
         uniqueID = 51218
       )
@@ -305,7 +261,8 @@ app_server <- function( input, output, session ) {
           'UrbDwDens',
           'UrbDenQuin',
           'ResDwDens',
-          'ResDenQuin'
+          'ResDenQuin',
+          'yaxis_ran'
         ),
         uniqueID = PER_map_SSC$click
       )
@@ -342,533 +299,146 @@ app_server <- function( input, output, session ) {
     }
   })
   
-  
-
-  
-  
-  
-  
-  # 
-  # 
-  # 
-  # 
-  # 
-  # PER_SSC_pie_data <- filter_piechart(
-  #   filter_SSC(
-  #     df = PER_SSC_DATA,
-  #     uniqueID = PER_SSC_DATA$SSC_CODE16,
-  #     clickID = 51218
-  #   ),
-  #   columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg')
-  # )
-  # 
-  # output$testplot <- ggiraph::renderGirafe({
-  #   if (is.null(PER_map_SSC$click)) {
-  #   plot <- ggplot2::ggplot(PER_vegtype_pie, ggplot2::aes(x="", y=percent, fill=type)) +
-  #     ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = paste0(type,": ", round(percent,1), "%")), stat="identity", width=1) +
-  #     ggplot2::coord_polar("y", start=0) +
-  #     ggplot2::scale_fill_manual(values = c('#31a354', '#c7ebbc','#e8e8e8', '#88c981' )) +
-  #     ggplot2::theme_void() +
-  #     ggplot2::theme(legend.position="none") 
-  #   ggiraph::girafe(code = print(plot),
-  #          fonts = list(sans = "Roboto"),
-  #          options = list(ggiraph::opts_tooltip(use_fill = TRUE,
-  #                                      css = "border: 1px solid rgba(97, 97, 97, 0.68);
-  #                                    border-radius: 5px;
-  #                                    font-family: 'Roboto';
-  #                                    color: rgba(97, 97, 97, 0.93)")
-  #          )) 
-  #   }
-  #   else {
-  #     PER_SSC_pie_data <- filter_SSC(
-  #       df = PER_SSC_DATA,
-  #       uniqueID = PER_SSC_DATA$SSC_CODE16,
-  #       clickID = PER_map_SSC$click
-  #     )
-  #     
-  #     PER_vegtype_pie_data <- filter_piechart(
-  #       PER_SSC_pie_data,
-  #       columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg')
-  #     )
-  #     plot <- ggplot2::ggplot(PER_vegtype_pie_data, ggplot2::aes(x="", y=percent, fill=type)) +
-  #       ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = paste0(type,": ", round(percent,1), "%")), stat="identity", width=1) +
-  #       ggplot2::coord_polar("y", start=0) +
-  #       ggplot2::scale_fill_manual(values = c('#31a354', '#c7ebbc','#e8e8e8', '#88c981' )) +
-  #       ggplot2::theme_void() +
-  #       ggplot2::theme(legend.position="none") 
-  #     ggiraph::girafe(code = print(plot),
-  #            fonts = list(sans = "Roboto"),
-  #            options = list(ggiraph::opts_tooltip(use_fill = TRUE,
-  #                                        css = "border: 1px solid rgba(97, 97, 97, 0.68);
-  #                                    border-radius: 5px;
-  #                                    font-family: 'Roboto';
-  #                                    color: rgba(97, 97, 97, 0.93)")
-  #            )) 
-  #     
-  #   }
-  # })
-  
-  # output$PER_vegtype_pie <- plotly::renderPlotly({
-  #   vegtype_pie(df = PER_SSC_pie_data,
-  #               pieVals = PER_SSC_pie_data$percent)
-  # 
-  # })
-  
-  # Plotly proxy update of base plot from map click
-
-   # observeEvent(PER_map_SSC$click, {
-   #   PER_vegtype_pie_data <- PER_vegtype_pie_data()
-   #   vegtype_pie_proxy(plotlyID = "PER_vegtype_pie",
-   #                     df = PER_vegtype_pie_data,
-   #                     pieVals = PER_vegtype_pie_data[["percent"]])
-   # })
-  
-  # observe({
-  #   if (!is.null(PER_map_SSC$click)) {
-  #     PER_SSC_pie_data <- filter_SSC(
-  #       df = PER_SSC_DATA,
-  #       uniqueID = PER_SSC_DATA$SSC_CODE16,
-  #       clickID = PER_map_SSC$click
-  #     )
-  #     
-  #     PER_vegtype_pie_data <- filter_piechart(
-  #       PER_SSC_pie_data,
-  #       columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg')
-  #     )
-  #     
-  #     vegtype_pie_proxy(plotlyID = "PER_vegtype_pie",
-  #                       #df = PER_vegtype_pie_data,
-  #                       pieVals = PER_vegtype_pie_data[["percent"]])
-  #   }
-  # })
-  # 
-
-
-  #  
-  # 
-  # output$echarts_PER_vegtype_pie <- echarts4r::renderEcharts4r({
-  #   PER_vegtype_pie <- filter_piechart(
-  #         filter_SSC(
-  #           df = PER_SSC_DATA,
-  #           uniqueID = PER_SSC_DATA$SSC_CODE16,
-  #           clickID = 51218
-  #         ),
-  #         columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg')
-  #       )
-  # 
-  #   PER_vegtype_pie %>%
-  #     echarts4r::e_charts(type) %>%
-  #     echarts4r::e_pie(serie = percent,
-  #                      name = "default",
-  #                      legend = FALSE,
-  #                      label = list(position = 'outside'),
-  #                      labelLine = list(show = TRUE,
-  #                                       length = '2.5px',
-  #                                       length2 = '5px')
-  #     ) %>%
-  #     echarts4r::e_labels() %>%
-  #     echarts4r::e_color(color = c('#a1d99b', '#41ab5d', '#005a32', '#bdbdbd')) %>%
-  #     echarts4r::e_tooltip(formatter =  echarts4r::e_tooltip_choro_formatter(style = "percent",
-  #                                                                            digits = 0)) %>%
-  #     echarts4r::e_title("Vegetation Type", left = 'center')
-  #   # echarts_vegtype_pie(df = PER_vegtype_pie,
-  #   #                     values = type,
-  #   #                     columnNames = percent)
-  # })
-  # 
-  # observeEvent(PER_map_SSC$click, {
-  #   PER_vegtype_pie_data <- PER_vegtype_pie_data()
-  # 
-  #   echarts4r::echarts4rProxy("echarts_PER_vegtype_pie", data = PER_vegtype_pie_data, x = type) %>%
-  #     echarts4r::e_remove_serie("default") %>%
-  #     echarts4r::e_pie(percent,
-  #                      name = "default",
-  #                      labelLine = list(show = TRUE,
-  #                                       length = '2.5px',
-  #                                       length2 = '5px')) %>%
-  # 
-  #     #echarts4r::e_append1_p(data = PER_vegtype_pie_data, x = type, y = percent) %>%
-  #     echarts4r::e_execute()
-  # })
-  # 
-
-  
-  
-
-  
-  # observe({
-  #   if (!is.null(PER_map_SSC$click) & (PER_map_SSC$click != "SSC_CODE16")){
-  #     PER_vegtype_pie <- PER_vegtype_pie_data()
-  #     vegtype_pie_proxy(df = PER_vegtype_pie,
-  #                       plotlyID = "PER_vegtype_pie",
-  #                       pieVals = PER_vegtype_pie$percent)
-  #   }
-  #   else {
-  #     return(NULL)
-  #   }
-  #   
-  # })
-  
-# PER SSC Priv Publ piechart
-  
-  # PER_privpubl_pie_data <- reactive({
-  #   if(!is.null(PER_map_SSC$click)){
-  #     filter_piechart(PER_SSC_DATA,
-  #                     uniqueID = PER_SSC_DATA$SSC_CODE16,
-  #                     clickID = PER_map_SSC$click,
-  #                     columnsToPlot = c('TrPriv', 'TrPubl')
-  #     )
-  #   }
-  #   else {
-  #     return(NULL)
-  #   }
-  # })
-  # 
-  # output$PER_privpubl_pie <- plotly::renderPlotly({
-  #   PER_privpubl_pie <- PER_privpubl_pie_data()
-  #   if(!is.null(PER_privpubl_pie)){
-  #     privpubl_pie(df = PER_privpubl_pie,
-  #                 pieVals = PER_privpubl_pie$percent
-  #     )
-  #   }
-  #   else {
-  #     return(NULL)
-  #   }
-  # })
-
-# # PER SSC Land Use piechart
-#   
-#   PER_LU_pie_data <- reactive({
-#     if(!is.null(PER_map_SSC$click)){
-#       filter_piechart(PER_SSC_DATA,
-#                       uniqueID = PER_SSC_DATA$SSC_CODE16,
-#                       clickID = PER_map_SSC$click,
-#                       columnsToPlot = c('ArResPer', 'ArParkPer', 'ArInfrPer', 'ArOthPer', 
-#                                         'ArIndlPer', 'ArEduPer', 'ArCommPer', 'ArHospPer',
-#                                         'ArTransPer', 'ArWatPer', 'ArPrimPPer')
-#       )
-#     }
-#     else {
-#       return(NULL)
-#     }
-#   })
-#   
-#   output$PER_LU_pie <- plotly::renderPlotly({
-#     PER_LU_pie <- PER_LU_pie_data()
-#     if(!is.null(PER_LU_pie)){
-#      LU_pie(df = PER_LU_pie,
-#                    pieVals = PER_LU_pie$percent
-#       )
-#     }
-#     else {
-#       return(NULL)
-#     }
-#   })
-#   
-# # PER SSC TREE Land Use piechart
-# 
-  # PER_TrLU_pie_data <- reactive({
-  #   if(!is.null(PER_map_SSC$click)){
-  #     filter_piechart(PER_SSC_DATA,
-  #                     uniqueID = PER_SSC_DATA$SSC_CODE16,
-  #                     clickID = PER_map_SSC$click,
-  #                     columnsToPlot = c('TrResPer', 'TrParkPer', 'TrInfrPer', 'TrOthPer',
-  #                                       'TrIndlPer', 'TrEduPer', 'TrCommPer', 'TrHospPer',
-  #                                       'TrTransPer', 'TrWatPer', 'TrPrimPPer')
-  #     )
-  #   }
-  #   else {
-  #     return(NULL)
-  #   }
-  # })
-  # 
-  # output$PER_TrLU_pie <- plotly::renderPlotly({
-  #   PER_TrLU_pie <- PER_TrLU_pie_data()
-  #   if(!is.null(PER_TrLU_pie)){
-  #     TrLU_pie(df = PER_TrLU_pie,
-  #            pieVals = PER_TrLU_pie$percent
-  #     )
-  #   }
-  #   else {
-  #     return(NULL)
-  #   }
-  # })
-
-# PER SSC filter scatter data
-
-  PER_SSC_scatter_data <- filter_scatter(
-    PER_SSC_DATA,
-    columnsToPlot = c('SSC_CODE16','SSC_NAME16','PerAnyTree', 'GrDwDens', 'GrDenQuint', 'UrbDwDens', 'UrbDenQuin', 'ResDwDens', 'ResDenQuin'),
-    uniqueID = PER_SSC_DATA$SSC_CODE16
-    
-  )
-  
-test <-   ggplot2::ggplot(PER_SSC_scatter_data, 
-                  ggplot2::aes(x=PerAnyTree, y=yaxis_ran)
-                  ) + 
-    ggiraph::geom_point_interactive(ggplot2::aes(tooltip = paste0(SSC_NAME16,": ", round(PerAnyTree,1), "%")),
-      color= "#FD3630", size = 4) +
-    #ggplot2::geom_point(color= "#FD3630", size = 4) +
-    gghighlight::gghighlight(SSC_CODE16 == 51218, unhighlighted_colour =  ggplot2::alpha("#3182bd", 0.5)) +
-    gghighlight::gghighlight(GrDenQuint == as.numeric(1), unhighlighted_colour = ggplot2::alpha("#bdbdbd", 0.4)) +
-    ggplot2::labs(x=NULL, y=NULL) +
-    ggplot2::scale_x_continuous(label=scales::percent_format(accuracy = 1),expand = c(0, 0)) +
-    ggplot2::scale_y_continuous(expand = c(0, 0), limits = c(1.95, 2.1)) +
-    ggplot2::theme_classic() +
-    ggplot2::theme(axis.title.x=ggplot2::element_blank(),
-          axis.title.y=ggplot2::element_blank(),
-          axis.text.y = ggplot2::element_blank(),
-          axis.ticks.y =ggplot2:: element_blank(),
-          axis.line.y=ggplot2::element_blank(),
-          axis.text.x = ggplot2::element_text(colour = "black", size = 16),
-          panel.background = ggplot2::element_rect(fill = "white",
-                                          colour = "white",
-                                          size = 0.5, linetype = "solid"),
-          plot.background = ggplot2::element_rect(fill = "white"),
-          text = ggplot2::element_text(size=15),
-          plot.title = ggplot2::element_text(hjust = 0, vjust = 2.5, face = "bold", size = 16),
-          legend.position = "none",
-          plot.margin = ggplot2::margin(0.2, 0.2, 0.2, 0.4, "cm"),
-          panel.grid.major.x = ggplot2::element_line(colour="black", size = (0.25)))
-ggiraph::girafe(code = print(test),
-                fonts = list(serif = "Helvetica"),
-                width_svg = 9, 
-                height_svg = 8,
-                options = list(ggiraph::opts_tooltip(#use_fill = TRUE,
-                  css = "background-color:gray;
-                                                              color:white;
-                                                              font-style:italic;
-                                                              padding:10px;
-                                                              font-family: Helvetica;
-                                                              border-radius:5px;"),
-                  ggiraph::opts_sizing(rescale = TRUE, width = 1)
-                )) 
-
-  # Renders PER SSC SCATTER GROSS
-  output$PER_SSC_gross_scatter <- plotly::renderPlotly({
-    scatter_plot(df = PER_SSC_scatter_data,
-                 xVals = PER_SSC_scatter_data$PerAnyTree,
-                 yVals = PER_SSC_scatter_data$yaxis_ran,
-                 source = 'PER_SSC_plot1',
-                 structureName = PER_SSC_scatter_data$SSC_NAME16,
-                 plotTitle = "<b>Tree Canopy (%) & Gross Density Quintiles</b>",
-                 tree = PER_SSC_scatter_data$PerAnyTree,
-                 densityQuintile = PER_SSC_scatter_data$GrDenQuint,
-                 density = PER_SSC_scatter_data$GrDwDens)
-  })
-  
-  observe({
-    if (!is.null(PER_map_SSC$click)){
-      selected_quintile <- base::as.numeric(PER_SSC_scatter_data[PER_SSC_scatter_data[['SSC_CODE16']] == PER_map_SSC$click, ]['GrDenQuint'])
+  # Output PER bar charts
+  output$PER_barcharts <- ggiraph::renderGirafe({
+    if (is.null(PER_map_SSC$click)) {
       
-      PER_SSC_selected_quintile <- filter(PER_SSC_scatter_data, GrDenQuint == selected_quintile)
+      # Default PER bar chart data - 51218
+      PER_SSC_bar_data <- filter_SSC(
+        df = PER_SSC_DATA,
+        uniqueID = PER_SSC_DATA$SSC_CODE16,
+        clickID = 51218
+      )
       
-      plotly::plotlyProxy("PER_SSC_gross_scatter") %>%
-        plotly::plotlyProxyInvoke("deleteTraces", list(1)) %>%
-        plotly::plotlyProxyInvoke(
-          "addTraces",
-          list(
-            x = PER_SSC_selected_quintile$PerAnyTree,
-            y = PER_SSC_selected_quintile$yaxis_ran,
-            type = 'line',
-            mode = 'markers',
-            marker = list(size = 10,
-                          opacity = 0.8,
-                          color = '#4292c6'),
-            showlegend = FALSE,
-            hoverinfo = 'text',
-            text = quin_hover_text(
-              structureName = PER_SSC_selected_quintile$SSC_NAME16,
-              tree = PER_SSC_selected_quintile$PerAnyTree,
-              densityQuintile = PER_SSC_selected_quintile$GrDenQuint,
-              density = PER_SSC_selected_quintile$GrDwDens
-            )
-          )
-        ) %>%
-        plotly::plotlyProxyInvoke("relayout",
-                                  list(shapes = list(
-                                    scatter_quinline(
-                                      df = PER_SSC_scatter_data,
-                                      uniqueID = "SSC_CODE16",
-                                      clickID = PER_map_SSC$click,
-                                      groupID = "GrDenQuint",
-                                      xVals = "PerAnyTree"
-                                    ),
-                                    scatter_mean(df = PER_SSC_scatter_data,
-                                                 xVals = "PerAnyTree")
-                                  ),
-                                  annotations = list(scatter_annotation(
-                                    df = PER_SSC_selected_quintile,
-                                    uniqueID = "SSC_CODE16",
-                                    clickID = PER_map_SSC$click,
-                                    xVals = "PerAnyTree",
-                                    yVals = "yaxis_ran",
-                                    structureName = "SSC_NAME16"
-                                  ),
-                                  scatter_quinline_label(
-                                    df = PER_SSC_selected_quintile,
-                                    uniqueID = "SSC_CODE16",
-                                    clickID = PER_map_SSC$click,
-                                    groupID = "GrDenQuint",
-                                    xVals = "PerAnyTree"
-                                  ),
-                                  scatter_mean_label(df = PER_SSC_scatter_data, xVals = "PerAnyTree"))))
-    } 
-    else{
-      return(NULL)
+      # Filters PER_SSC_bar_data for the vegetation-type bar chart
+      PER_vegtype_bar_data <- filter_barchart(
+        PER_SSC_bar_data,
+        columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg'),
+        newNames = c('Grass', 'Shrub', 'Tree', 'Non-veg'),
+        order = c('Non-veg', 'Grass', 'Shrub', 'Tree')
+      )
+      
+      
+      # Filters PER_SSC_pie_data for the land tenure bar chart
+      PER_privpubl_bar_data <- filter_barchart(
+        PER_SSC_bar_data,
+        columnsToPlot = c('TrPriv', 'TrPubl'),
+        newNames = c('Private', 'Public'),
+        order = c('Private', 'Public')
+      )
+      
+      # Filters PER_SSC_bar_data for the land use bar chart
+      PER_landuse_bar_data <- filter_piechart(PER_SSC_bar_data,
+                                              columnsToPlot = c('ArResPer', 'ArParkPer', 'ArInfrPer', 'ArOthPer',
+                                                                'ArIndlPer', 'ArEduPer', 'ArCommPer', 'ArHospPer',
+                                                                'ArTransPer', 'ArWatPer', 'ArPrimPPer'),
+                                              newNames = c('Residential', 'Parkland', 'Infrastructure', 'Other', 
+                                                           'Industrial', 'Education', 'Commercial', 'Hospital', 
+                                                           'Transport', 'Water', 'Primary Production'),
+                                              order = c('Primary Production', 'Water','Transport', 
+                                                        'Hospital', 'Commercial','Education',
+                                                        'Industrial','Other', 'Infrastructure',
+                                                        'Parkland','Residential')
+      )
+      
+      # Filters PER_SSC_bar_data for the TREE land use bar chart
+      PER_treelanduse_bar_data <- filter_piechart(PER_SSC_bar_data,
+                                                  columnsToPlot = c('TrResPer', 'TrParkPer', 'TrInfrPer', 'TrOthPer',
+                                                                    'TrIndlPer', 'TrEduPer', 'TrCommPer', 'TrHospPer',
+                                                                    'TrTransPer', 'TrWatPer', 'TrPrimPPer'),
+                                                  newNames = c('Residential', 'Parkland', 'Infrastructure', 'Other', 
+                                                               'Industrial', 'Education', 'Commercial', 'Hospital', 
+                                                               'Transport', 'Water', 'Primary Production'),
+                                                  order = c('Primary Production', 'Water','Transport', 
+                                                            'Hospital', 'Commercial','Education',
+                                                            'Industrial','Other', 'Infrastructure',
+                                                            'Parkland','Residential')
+      )
+      
+      # Plots bar charts
+      landuseBarcharts(vegtypeData = PER_vegtype_bar_data,
+                       vegtypeVals = PER_vegtype_bar_data$percent,
+                       vegtypeGroups = PER_vegtype_bar_data$type,
+                       tenureData = PER_privpubl_bar_data, 
+                       tenureVals = PER_privpubl_bar_data$percent, 
+                       tenureGroups = PER_privpubl_bar_data$type,
+                       landuseData = PER_landuse_bar_data,
+                       landuseVals = PER_landuse_bar_data$percent,
+                       landuseGroups = PER_landuse_bar_data$type,
+                       treelanduseData = PER_treelanduse_bar_data,
+                       treelanduseVals = PER_treelanduse_bar_data$percent,
+                       treelanduseGroups = PER_treelanduse_bar_data$type)
+    }
+    else {
+      
+      # Default PER bar chart data 
+      PER_SSC_bar_data <- filter_SSC(
+        df = PER_SSC_DATA,
+        uniqueID = PER_SSC_DATA$SSC_CODE16,
+        clickID = PER_map_SSC$click
+      )
+      
+      # Filters PER_SSC_bar_data for the vegetation-type bar chart
+      PER_vegtype_bar_data <- filter_barchart(
+        PER_SSC_bar_data,
+        columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg'),
+        newNames = c('Grass', 'Shrub', 'Tree', 'Non-veg'),
+        order = c('Non-veg', 'Grass', 'Shrub', 'Tree')
+      )
+      
+      
+      # Filters PER_SSC_pie_data for the land tenure bar chart
+      PER_privpubl_bar_data <- filter_barchart(
+        PER_SSC_bar_data,
+        columnsToPlot = c('TrPriv', 'TrPubl'),
+        newNames = c('Private', 'Public'),
+        order = c('Private', 'Public')
+      )
+      
+      # Filters PER_SSC_bar_data for the land use bar chart
+      PER_landuse_bar_data <- filter_piechart(PER_SSC_bar_data,
+                                              columnsToPlot = c('ArResPer', 'ArParkPer', 'ArInfrPer', 'ArOthPer',
+                                                                'ArIndlPer', 'ArEduPer', 'ArCommPer', 'ArHospPer',
+                                                                'ArTransPer', 'ArWatPer', 'ArPrimPPer'),
+                                              newNames = c('Residential', 'Parkland', 'Infrastructure', 'Other', 
+                                                           'Industrial', 'Education', 'Commercial', 'Hospital', 
+                                                           'Transport', 'Water', 'Primary Production'),
+                                              order = c('Primary Production', 'Water','Transport', 
+                                                        'Hospital', 'Commercial','Education',
+                                                        'Industrial','Other', 'Infrastructure',
+                                                        'Parkland','Residential')
+      )
+      
+      # Filters PER_SSC_bar_data for the TREE land use bar chart
+      PER_treelanduse_bar_data <- filter_piechart(PER_SSC_bar_data,
+                                                  columnsToPlot = c('TrResPer', 'TrParkPer', 'TrInfrPer', 'TrOthPer',
+                                                                    'TrIndlPer', 'TrEduPer', 'TrCommPer', 'TrHospPer',
+                                                                    'TrTransPer', 'TrWatPer', 'TrPrimPPer'),
+                                                  newNames = c('Residential', 'Parkland', 'Infrastructure', 'Other', 
+                                                               'Industrial', 'Education', 'Commercial', 'Hospital', 
+                                                               'Transport', 'Water', 'Primary Production'),
+                                                  order = c('Primary Production', 'Water','Transport', 
+                                                            'Hospital', 'Commercial','Education',
+                                                            'Industrial','Other', 'Infrastructure',
+                                                            'Parkland','Residential')
+      )
+      
+      # Plots bar charts
+      landuseBarcharts(vegtypeData = PER_vegtype_bar_data,
+                       vegtypeVals = PER_vegtype_bar_data$percent,
+                       vegtypeGroups = PER_vegtype_bar_data$type,
+                       tenureData = PER_privpubl_bar_data, 
+                       tenureVals = PER_privpubl_bar_data$percent, 
+                       tenureGroups = PER_privpubl_bar_data$type,
+                       landuseData = PER_landuse_bar_data,
+                       landuseVals = PER_landuse_bar_data$percent,
+                       landuseGroups = PER_landuse_bar_data$type,
+                       treelanduseData = PER_treelanduse_bar_data,
+                       treelanduseVals = PER_treelanduse_bar_data$percent,
+                       treelanduseGroups = PER_treelanduse_bar_data$type)
     }
   })
-  
-  # Renders PER SSC SCATTER URBAN
-  output$PER_SSC_urban_scatter <- plotly::renderPlotly({
-    scatter_plot(df = PER_SSC_scatter_data,
-                 xVals = PER_SSC_scatter_data$PerAnyTree,
-                 yVals = PER_SSC_scatter_data$yaxis_ran,
-                 source = 'PER_SSC_plot1',
-                 structureName = PER_SSC_scatter_data$SSC_NAME16,
-                 plotTitle = "<b>Tree Canopy (%) & Urban Density Quintiles</b>",
-                 tree = PER_SSC_scatter_data$PerAnyTree,
-                 densityQuintile = PER_SSC_scatter_data$UrbDenQuin,
-                 density = PER_SSC_scatter_data$UrbDwDens)
-  })
-  
-  observe({
-    #if (!is.null(PER_map_SSC$click)){
-      selected_quintile <- base::as.numeric(PER_SSC_scatter_data[PER_SSC_scatter_data[['SSC_CODE16']] == PER_map_SSC$click, ]['UrbDenQuin'])
-      
-      PER_SSC_selected_quintile <- filter(PER_SSC_scatter_data, UrbDenQuin == selected_quintile)
-      
-      plotly::plotlyProxy("PER_SSC_urban_scatter") %>%
-        plotly::plotlyProxyInvoke("deleteTraces", list(1)) %>%
-        plotly::plotlyProxyInvoke(
-          "addTraces",
-          list(
-            x = PER_SSC_selected_quintile$PerAnyTree,
-            y = PER_SSC_selected_quintile$yaxis_ran,
-            type = 'line',
-            mode = 'markers',
-            marker = list(size = 10,
-                          opacity = 0.8,
-                          color = '#4292c6'),
-            showlegend = FALSE,
-            hoverinfo = 'text',
-            text = quin_hover_text(
-              structureName = PER_SSC_selected_quintile$SSC_NAME16,
-              tree = PER_SSC_selected_quintile$PerAnyTree,
-              densityQuintile = PER_SSC_selected_quintile$UrbDenQuin,
-              density = PER_SSC_selected_quintile$UrbDwDens
-            )
-          )
-        ) %>%
-        plotly::plotlyProxyInvoke("relayout",
-                                  list(shapes = list(
-                                    scatter_quinline(
-                                      df = PER_SSC_scatter_data,
-                                      uniqueID = "SSC_CODE16",
-                                      clickID = PER_map_SSC$click,
-                                      groupID = "UrbDenQuin",
-                                      xVals = "PerAnyTree"
-                                    ),
-                                    scatter_mean(df = PER_SSC_scatter_data,
-                                                 xVals = "PerAnyTree")
-                                  ),
-                                  annotations = list(scatter_annotation(
-                                    df = PER_SSC_selected_quintile,
-                                    uniqueID = "SSC_CODE16",
-                                    clickID = PER_map_SSC$click,
-                                    xVals = "PerAnyTree",
-                                    yVals = "yaxis_ran",
-                                    structureName = "SSC_NAME16"
-                                  ),
-                                  scatter_quinline_label(
-                                    df = PER_SSC_selected_quintile,
-                                    uniqueID = "SSC_CODE16",
-                                    clickID = PER_map_SSC$click,
-                                    groupID = "UrbDenQuin",
-                                    xVals = "PerAnyTree"
-                                  ),
-                                  scatter_mean_label(df = PER_SSC_scatter_data, xVals = "PerAnyTree"))))
-   # } 
-   # else{
-   #   return(NULL)
-   # }
-  })
-  
-  # Renders PER SSC SCATTER RES
-  output$PER_SSC_res_scatter <- plotly::renderPlotly({
-    scatter_plot(df = PER_SSC_scatter_data,
-                 xVals = PER_SSC_scatter_data$PerAnyTree,
-                 yVals = PER_SSC_scatter_data$yaxis_ran,
-                 source = 'PER_SSC_plot1',
-                 structureName = PER_SSC_scatter_data$SSC_NAME16,
-                 plotTitle = "<b>Tree Canopy (%) & Residential Density Quintiles</b>",
-                 tree = PER_SSC_scatter_data$PerAnyTree,
-                 densityQuintile = PER_SSC_scatter_data$ResDenQuin,
-                 density = PER_SSC_scatter_data$ResDwDens)
-  })
-  
-  observe({
-    if (!is.null(PER_map_SSC$click)){
-      selected_quintile <- base::as.numeric(PER_SSC_scatter_data[PER_SSC_scatter_data[['SSC_CODE16']] == PER_map_SSC$click, ]['ResDenQuin'])
-      
-      PER_SSC_selected_quintile <- filter(PER_SSC_scatter_data, ResDenQuin == selected_quintile)
-      
-      plotly::plotlyProxy("PER_SSC_res_scatter") %>%
-        plotly::plotlyProxyInvoke("deleteTraces", list(1)) %>%
-        plotly::plotlyProxyInvoke(
-          "addTraces",
-          list(
-            x = PER_SSC_selected_quintile$PerAnyTree,
-            y = PER_SSC_selected_quintile$yaxis_ran,
-            type = 'line',
-            mode = 'markers',
-            marker = list(size = 10,
-                          opacity = 0.8,
-                          color = '#4292c6'),
-            showlegend = FALSE,
-            hoverinfo = 'text',
-            text = quin_hover_text(
-              structureName = PER_SSC_selected_quintile$SSC_NAME16,
-              tree = PER_SSC_selected_quintile$PerAnyTree,
-              densityQuintile = PER_SSC_selected_quintile$ResDenQuin,
-              density = PER_SSC_selected_quintile$ResDwDens
-            )
-          )
-        ) %>%
-        plotly::plotlyProxyInvoke("relayout",
-                                  list(shapes = list(
-                                    scatter_quinline(
-                                      df = PER_SSC_scatter_data,
-                                      uniqueID = "SSC_CODE16",
-                                      clickID = PER_map_SSC$click,
-                                      groupID = "ResDenQuin",
-                                      xVals = "PerAnyTree"
-                                    ),
-                                    scatter_mean(df = PER_SSC_scatter_data,
-                                                 xVals = "PerAnyTree")
-                                  ),
-                                  annotations = list(scatter_annotation(
-                                    df = PER_SSC_selected_quintile,
-                                    uniqueID = "SSC_CODE16",
-                                    clickID = PER_map_SSC$click,
-                                    xVals = "PerAnyTree",
-                                    yVals = "yaxis_ran",
-                                    structureName = "SSC_NAME16"
-                                  ),
-                                  scatter_quinline_label(
-                                    df = PER_SSC_selected_quintile,
-                                    uniqueID = "SSC_CODE16",
-                                    clickID = PER_map_SSC$click,
-                                    groupID = "ResDenQuin",
-                                    xVals = "PerAnyTree"
-                                  ),
-                                  scatter_mean_label(df = PER_SSC_scatter_data, xVals = "PerAnyTree"))))
-    } 
-    else{
-      return(NULL)
-    }
-  })  
-  
+
 #   
 # # MEL SSC -----------------------------------------------------------------
 #   
@@ -1667,19 +1237,22 @@ else {
     
   })
   
-  #PER_active_SSC <- reactiveValues(click = vector(mode = 'numeric'))
+  
+  
+  
   PER_active_SSC <- reactiveValues(
     name = vector(mode = 'character')
   )
   
   PER_active_SSC$name <- 'Perth (WA)'
-    
-
+  
   observeEvent(PER_map_SSC$click,{
     
-  PER_active_SSC$name <- (PER_SSC_DATA[PER_SSC_DATA[['SSC_CODE16']] ==  PER_map_SSC$click, ]['SSC_NAME16'])
-  
+    PER_active_SSC$name <- (PER_SSC_DATA[PER_SSC_DATA[['SSC_CODE16']] ==  PER_map_SSC$click, ]['SSC_NAME16'])
+    
   })
+
+
   
   # observeEvent(PER_map_SSC$click, {
   #     leaflet::leafletProxy("PER_SSC_map") %>%

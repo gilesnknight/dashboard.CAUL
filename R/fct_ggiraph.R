@@ -72,3 +72,164 @@ landusePiecharts <- function(vegtypeData,
                   )) 
   
 }
+
+landuseBarcharts <- function(vegtypeData,
+                             vegtypeVals,
+                             vegtypeGroups, 
+                             tenureData,
+                             tenureVals,
+                             tenureGroups,
+                             landuseData,
+                             landuseVals,
+                             landuseGroups,
+                             treelanduseData,
+                             treelanduseVals,
+                             treelanduseGroups){
+  
+  vegtypeBar <- ggplot2::ggplot(vegtypeData,
+                                ggplot2::aes(1, vegtypeVals, group = vegtypeGroups)) +
+    ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = paste0(vegtypeGroups, ": ", round(vegtypeVals *
+                                                                                    100, 1), "%"), fill = vegtypeGroups),
+                                  stat = "identity",
+                                  width = 1) +
+    ggplot2::scale_fill_manual(
+      values = c('#e8e8e8', '#c7ebbc', '#88c981', '#31a354'),
+      guide = ggplot2::guide_legend(reverse = TRUE)
+    ) +
+    ggplot2::coord_flip() +
+    ggplot2::scale_y_continuous(position = "left", labels = scales::percent) +
+    ggplot2::ggtitle("Vegetation type") +
+    ggplot2::theme_classic() +
+    ggplot2::theme(
+      axis.title.x = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_blank(),
+      axis.ticks.x = ggplot2::element_blank(),
+      axis.line.x = ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_blank(),
+      axis.text.y = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank(),
+      axis.line.y = ggplot2::element_blank(),
+      legend.title = ggplot2::element_blank(),
+      legend.text = ggplot2::element_text(size = 8),
+      legend.key.size = ggplot2::unit(0.5, "cm"),
+      legend.margin = ggplot2::margin(0, 0, 0, 380),
+      plot.title = ggplot2::element_text(face = 'bold',
+                                         vjust = -5.5),
+      legend.position = "top"
+    )
+  
+  tenureBar <- ggplot2::ggplot(tenureData,
+                               ggplot2::aes(1, tenureVals, group = tenureGroups)) +
+    ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = paste0(tenureGroups, ": ", round(tenureVals *
+                                                                                    100, 1), "%"), fill = tenureGroups),
+                                  stat = "identity",
+                                  width = 1) +
+    ggplot2::scale_fill_manual(
+      values = c('#de2d26', '#3182bd'),
+      guide = ggplot2::guide_legend(reverse = TRUE)
+    ) +
+    ggplot2::coord_flip() +
+    ggplot2::scale_y_continuous(position = "left", labels = scales::percent) +
+    ggplot2::ggtitle("Tenure split") +
+    ggplot2::theme_classic() +
+    ggplot2::theme(
+      axis.title.x = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_blank(),
+      axis.ticks.x = ggplot2::element_blank(),
+      axis.line.x = ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_blank(),
+      axis.text.y = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank(),
+      axis.line.y = ggplot2::element_blank(),
+      legend.title = ggplot2::element_blank(),
+      legend.text = ggplot2::element_text(size = 8),
+      legend.key.size = ggplot2::unit(0.5, "cm"),
+      legend.margin = ggplot2::margin(0, 0, 0, 470),
+      plot.title = ggplot2::element_text(face = 'bold',
+                                         vjust = -5.5),
+      legend.position = "top"
+    )
+  
+  
+  
+  landuseBar <- ggplot2::ggplot(landuseData,
+                                ggplot2::aes(1, landuseVals, group = landuseGroups)) +
+    ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = paste0(landuseGroups, ": ", round(landuseVals *
+                                                                                    100, 1), "%"), fill = landuseGroups),
+                                  stat = "identity",
+                                  width = 1) +
+    ggplot2::scale_fill_manual(
+      values = c('#5CE8C7', '#FFED6F', '#70AD47', '#BC80BD', '#F5F5F5', '#FB8072', '#B3DE69', '#E3FF8A', '#FDB462', '#264478', '#DAE3F3'),
+      guide = ggplot2::guide_legend(reverse = TRUE, nrow = 2)
+    ) +
+    ggplot2::coord_flip() +
+    ggplot2::scale_y_continuous(position = "left", labels = scales::percent) +
+    ggplot2::ggtitle("Land-use split") +
+    ggplot2::theme_classic() +
+    ggplot2::theme(
+      axis.title.x = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_blank(),
+      axis.ticks.x = ggplot2::element_blank(),
+      axis.line.x = ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_blank(),
+      axis.text.y = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank(),
+      axis.line.y = ggplot2::element_blank(),
+      legend.title = ggplot2::element_blank(),
+      legend.text = ggplot2::element_text(size = 8),
+      legend.key.size = ggplot2::unit(0.5, "cm"),
+      legend.text.align = 0,
+      legend.margin = ggplot2::margin(0, 0, 0, 150),
+      plot.title = ggplot2::element_text(face = 'bold',
+                                         vjust = -5.5),
+      legend.position = "top"
+    )
+  
+  treelanduseBar <- ggplot2::ggplot(treelanduseData,
+                                    ggplot2::aes(1, treelanduseVals, group = treelanduseGroups)) +
+    ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = paste0(treelanduseGroups, ": ", round(treelanduseVals *
+                                                                                    100, 1), "%"), fill = treelanduseGroups),
+                                  stat = "identity",
+                                  width = 1) +
+    ggplot2::scale_fill_manual(
+      values = c('#5CE8C7', '#FFED6F', '#70AD47', '#BC80BD', '#F5F5F5', '#FB8072', '#B3DE69', '#E3FF8A', '#FDB462', '#264478', '#DAE3F3'),
+      guide = ggplot2::guide_legend(reverse = TRUE)
+    ) +
+    ggplot2::coord_flip() +
+    ggplot2::scale_y_continuous(position = "left", labels = scales::percent) +
+    ggplot2::ggtitle("Tree land-use split") +
+    ggplot2::theme_classic() +
+    ggplot2::theme(
+      axis.title.x = ggplot2::element_blank(),
+      axis.title.y = ggplot2::element_blank(),
+      axis.text.y = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank(),
+      axis.line.y = ggplot2::element_blank(),
+      legend.title = ggplot2::element_blank(),
+      
+      
+      legend.margin = ggplot2::margin(0, 0, 0, 0),
+      plot.title = ggplot2::element_text(face = 'bold',
+                                         vjust = 0),
+      legend.position = "none"
+    )
+  
+  
+  
+  
+  ggiraph::girafe(code = print(vegtypeBar/tenureBar/landuseBar/treelanduseBar),
+                  fonts = list(serif = "Helvetica"),
+                  width_svg = 9, 
+                  height_svg =8,
+                  options = list(ggiraph::opts_tooltip(
+                    css = "background-color:gray;
+                                                              color:white;
+                                                              font-style:italic;
+                                                              padding:10px;
+                                                              font-family: Helvetica;
+                                                              border-radius:5px;"),
+                    ggiraph::opts_sizing(rescale = TRUE, width = 1)
+                  )) 
+  
+  
+}

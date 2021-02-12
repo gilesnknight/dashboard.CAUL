@@ -39,10 +39,10 @@ app_ui <- function(request) {
                             #   height=150,
                             #   id = "myImage")),
                             # waiter::waiter_hide_on_render("PER_SSC_map"),
-                            selectizeInput(
-                              'PER_SSC_dropdown', label = NULL, choices = PER_SSC_DATA$SSC_NAME16,
-                              options = list(maxOptions = 5)
-                            ),
+                            # selectizeInput(
+                            #   'PER_SSC_dropdown', label = NULL, choices = PER_SSC_DATA$SSC_NAME16,
+                            #   options = list(maxOptions = 5)
+                            # ),
                             leaflet::leafletOutput(outputId = "PER_SSC_map", height = "calc(100vh - 80px)")
                             
                             
@@ -52,36 +52,15 @@ app_ui <- function(request) {
                             width = 7,
                             tabsetPanel(type = "tabs",
                                         tabPanel("Land-use",
-                                                 ggiraph::girafeOutput("PER_psudoscatter",
-                                                                       height = 'calc(100vh - 80px)')
-                                                 # fluidRow(
-                                                 #   column(12, plotly::plotlyOutput("PER_SSC_gross_scatter",
-                                                 #                                   height = 'calc(34vh - 46px)')),
-                                                 #   column(12, plotly::plotlyOutput("PER_SSC_urban_scatter",
-                                                 #                                   height = 'calc(34vh - 46px)')),
-                                                 #   column(12, plotly::plotlyOutput("PER_SSC_res_scatter",
-                                                 #                                   height = 'calc(34vh - 46px)'))
-                                                 # )
+                                                 ggiraph::girafeOutput("PER_barcharts",
+                                                                       height = 'calc(97vh - 90px)')
                                                  
                                         ),
-                                        tabPanel("Suburb comparison",ggiraph::girafeOutput("PER_piecharts",
-                                                                            height = 'calc(100vh - 80px)')
-                                                 # fluidRow(
-                                                 #   # column(6, echarts4r::echarts4rOutput("PER_vegtype_pie",
-                                                 #   #                                height = 'calc(50vh - 57.5px)')),
-                                                 #   # column(6, plotly::plotlyOutput("PER_vegtype_pie",
-                                                 #   #                                height = 'calc(50vh - 57.5px)')),
-                                                 #   column(6, ggiraph::girafeOutput("PER_piecharts"))
-                                                 #   # column(6, plotly::plotlyOutput("PER_privpubl_pie",
-                                                 #   #                                height = 'calc(50vh - 57.5px)'))
-                                                 #          ),
-                                                 # fluidRow(
-                                                 #   # column(6, plotly::plotlyOutput("PER_LU_pie",
-                                                 #   #                                height = 'calc(50vh - 57.5px)')),
-                                                 #   # column(6, plotly::plotlyOutput("PER_TrLU_pie",
-                                                 #   #                                height = 'calc(50vh - 57.5px)'))
-                                                 # )
-                                                 )
+                                        tabPanel("Suburb comparison",ggiraph::girafeOutput("PER_psudoscatter",
+                                                                            height = 'calc(100vh - 90px)')
+                                                 ),
+                                        tabPanel("City comparison"
+                                        )
                                         
                                         
                                         )

@@ -32,18 +32,28 @@ filter_SSC <- function(df, uniqueID, clickID){
 }
 
 
-filter_piechart <- function(df, columnsToPlot){
-  filtered_piechart <- df %>%
+# filter_piechart <- function(df, columnsToPlot){
+#   filtered_piechart <- df %>%
+#     dplyr::select(columnsToPlot) %>%
+#     tidyr::pivot_longer(cols = columnsToPlot,
+#                         names_to = "type",
+#                         values_to = "percent")
+#   filtered_piechart
+# }
+
+
+
+filter_barchart <- function(df, columnsToPlot, newNames, order){
+  filtered_barchart <- df %>%
     dplyr::select(columnsToPlot) %>%
-    tidyr::pivot_longer(cols = columnsToPlot,
+    dplyr::rename_at(vars(columnsToPlot), ~ newNames) %>% 
+    tidyr::pivot_longer(cols = newNames,
                         names_to = "type",
                         values_to = "percent")
-  filtered_piechart
+  filtered_barchart[['type']] <- base::factor(newNames, levels = order)
+  filtered_barchart[['percent']] <- filtered_barchart[['percent']]/100
+  filtered_barchart
 }
-
-
-
-
 
 
 
