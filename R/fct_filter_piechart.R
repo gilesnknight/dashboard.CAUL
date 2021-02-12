@@ -43,18 +43,6 @@ filter_SSC <- function(df, uniqueID, clickID){
 
 
 
-filter_barchart <- function(df, columnsToPlot, newNames, order){
-  filtered_barchart <- df %>%
-    dplyr::select(columnsToPlot) %>%
-    dplyr::rename_at(vars(columnsToPlot), ~ newNames) %>% 
-    tidyr::pivot_longer(cols = newNames,
-                        names_to = "type",
-                        values_to = "percent")
-  filtered_barchart[['type']] <- base::factor(newNames, levels = order)
-  filtered_barchart[['percent']] <- filtered_barchart[['percent']]/100
-  filtered_barchart
-}
-
 
 
 

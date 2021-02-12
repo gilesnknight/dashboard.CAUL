@@ -15,8 +15,7 @@
 
 PER_SSC_GEO <- sf::st_read("inst/extdata/PER_SSC_GEO.gpkg")
 PER_SSC_DATA <- base::readRDS("inst/extdata/PER_SSC_DATA.rds")
-PER_SSC_DATA <- PER_SSC_DATA %>% 
-  dplyr::mutate(yaxis_ran = runif(nrow(PER_SSC_DATA), min = 1.98, max =
+PER_SSC_DATA <-  dplyr::mutate(PER_SSC_DATA, yaxis_ran = runif(nrow(PER_SSC_DATA), min = 1.98, max =
                                     2.02))
                   
 
@@ -40,24 +39,24 @@ app_server <- function( input, output, session ) {
 
   
   
-  # g <- waiter::Garcon$new("myImage", 
-  #                         filter = "opacity")
-  # 
-  # 
-  # for(i in 1:10){
-  #   Sys.sleep(runif(1))
-  #   g$set(i * 10)
-  # }
-  # 
-  # g2 <- waiter::Garcon$new("myImage2", 
-  #                         filter = "opacity")
-  # 
-  # 
-  # for(i in 1:10){
-  #   Sys.sleep(runif(1))
-  #   g2$set(i * 10)
-  # }
-  # 
+  g <- waiter::Garcon$new("myImage",
+                          filter = "opacity")
+
+
+  for(i in 1:10){
+    Sys.sleep(runif(1))
+    g$set(i * 10)
+  }
+
+  g2 <- waiter::Garcon$new("myImage2",
+                          filter = "opacity")
+
+
+  for(i in 1:10){
+    Sys.sleep(runif(1))
+    g2$set(i * 10)
+  }
+
 
 
   
@@ -396,7 +395,7 @@ app_server <- function( input, output, session ) {
       )
       
       # Filters PER_SSC_bar_data for the land use bar chart
-      PER_landuse_bar_data <- filter_piechart(PER_SSC_bar_data,
+      PER_landuse_bar_data <- filter_barchart(PER_SSC_bar_data,
                                               columnsToPlot = c('ArResPer', 'ArParkPer', 'ArInfrPer', 'ArOthPer',
                                                                 'ArIndlPer', 'ArEduPer', 'ArCommPer', 'ArHospPer',
                                                                 'ArTransPer', 'ArWatPer', 'ArPrimPPer'),
@@ -410,7 +409,7 @@ app_server <- function( input, output, session ) {
       )
       
       # Filters PER_SSC_bar_data for the TREE land use bar chart
-      PER_treelanduse_bar_data <- filter_piechart(PER_SSC_bar_data,
+      PER_treelanduse_bar_data <- filter_barchart(PER_SSC_bar_data,
                                                   columnsToPlot = c('TrResPer', 'TrParkPer', 'TrInfrPer', 'TrOthPer',
                                                                     'TrIndlPer', 'TrEduPer', 'TrCommPer', 'TrHospPer',
                                                                     'TrTransPer', 'TrWatPer', 'TrPrimPPer'),

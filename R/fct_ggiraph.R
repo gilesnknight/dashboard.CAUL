@@ -73,6 +73,8 @@ landusePiecharts <- function(vegtypeData,
   
 }
 
+
+# Creates 4 barcharts with interactive features
 landuseBarcharts <- function(vegtypeData,
                              vegtypeVals,
                              vegtypeGroups, 
@@ -86,6 +88,7 @@ landuseBarcharts <- function(vegtypeData,
                              treelanduseVals,
                              treelanduseGroups){
   
+  # Vegetation type bar chart
   vegtypeBar <- ggplot2::ggplot(vegtypeData,
                                 ggplot2::aes(1, vegtypeVals, group = vegtypeGroups)) +
     ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = paste0(vegtypeGroups, ": ", round(vegtypeVals *
@@ -118,6 +121,7 @@ landuseBarcharts <- function(vegtypeData,
       legend.position = "top"
     )
   
+  # Land tenure bar chart
   tenureBar <- ggplot2::ggplot(tenureData,
                                ggplot2::aes(1, tenureVals, group = tenureGroups)) +
     ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = paste0(tenureGroups, ": ", round(tenureVals *
@@ -150,8 +154,7 @@ landuseBarcharts <- function(vegtypeData,
       legend.position = "top"
     )
   
-  
-  
+  # Land-use bar chart
   landuseBar <- ggplot2::ggplot(landuseData,
                                 ggplot2::aes(1, landuseVals, group = landuseGroups)) +
     ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = paste0(landuseGroups, ": ", round(landuseVals *
@@ -185,10 +188,12 @@ landuseBarcharts <- function(vegtypeData,
       legend.position = "top"
     )
   
+  # Tree land-use bar chart
   treelanduseBar <- ggplot2::ggplot(treelanduseData,
                                     ggplot2::aes(1, treelanduseVals, group = treelanduseGroups)) +
     ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = paste0(treelanduseGroups, ": ", round(treelanduseVals *
-                                                                                    100, 1), "%"), fill = treelanduseGroups),
+                                                                                    100, 1), "%"), 
+                                               fill = treelanduseGroups),
                                   stat = "identity",
                                   width = 1) +
     ggplot2::scale_fill_manual(
@@ -201,6 +206,9 @@ landuseBarcharts <- function(vegtypeData,
     ggplot2::theme_classic() +
     ggplot2::theme(
       axis.title.x = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_blank(), #
+      axis.ticks.x = ggplot2::element_blank(), #
+      axis.line.x = ggplot2::element_blank(), #
       axis.title.y = ggplot2::element_blank(),
       axis.text.y = ggplot2::element_blank(),
       axis.ticks.y = ggplot2::element_blank(),
@@ -214,13 +222,11 @@ landuseBarcharts <- function(vegtypeData,
       legend.position = "none"
     )
   
-  
-  
-  
+  # Pass into ggiraph for interactive features
   ggiraph::girafe(code = print(vegtypeBar/tenureBar/landuseBar/treelanduseBar),
                   fonts = list(serif = "Helvetica"),
-                  width_svg = 9, 
-                  height_svg =8,
+                  width_svg = 11, 
+                  height_svg =9,
                   options = list(ggiraph::opts_tooltip(
                     css = "background-color:gray;
                                                               color:white;
@@ -228,8 +234,23 @@ landuseBarcharts <- function(vegtypeData,
                                                               padding:10px;
                                                               font-family: Helvetica;
                                                               border-radius:5px;"),
-                    ggiraph::opts_sizing(rescale = TRUE, width = 1)
+                    ggiraph::opts_sizing(rescale = TRUE, width = 1),
+                    ggiraph::opts_toolbar(saveaspng = FALSE)
                   )) 
   
   
 }
+
+
+filter_barchart <- function(df, columnsToPlot, newNames, order){
+  filtered_barchart <- df %>%
+    dplyr::select(columnsToPlot) %>%
+    dplyr::rename_at(vars(columnsToPlot), ~ newNames) %>% 
+    tidyr::pivot_longer(cols = newNames,
+                        names_to = "type",
+                        values_to = "percent")
+  filtered_barchart[['type']] <- base::factor(newNames, levels = order)
+  filtered_barchart[['percent']] <- filtered_barchart[['percent']]/100
+  filtered_barchart
+}
+

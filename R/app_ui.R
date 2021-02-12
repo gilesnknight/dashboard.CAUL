@@ -34,11 +34,11 @@ app_ui <- function(request) {
                         sidebarLayout(
                           sidebarPanel(
                             width = 5,
-                            # waiter::waiter_show_on_load(color = '#008346', tags$img(
-                            #   src="www/logo.png", 
-                            #   height=150,
-                            #   id = "myImage")),
-                            # waiter::waiter_hide_on_render("PER_SSC_map"),
+                            waiter::waiter_show_on_load(color = '#008346', tags$img(
+                              src="www/logo.png",
+                              height=150,
+                              id = "myImage")),
+                            waiter::waiter_hide_on_render("PER_SSC_map"),
                             # selectizeInput(
                             #   'PER_SSC_dropdown', label = NULL, choices = PER_SSC_DATA$SSC_NAME16,
                             #   options = list(maxOptions = 5)
@@ -56,8 +56,10 @@ app_ui <- function(request) {
                                                                        height = 'calc(97vh - 90px)')
                                                  
                                         ),
-                                        tabPanel("Suburb comparison",ggiraph::girafeOutput("PER_psudoscatter",
-                                                                            height = 'calc(100vh - 90px)')
+                                        tabPanel("Suburb comparison"
+                                                 # ggiraph::girafeOutput("PER_psudoscatter",
+                                                 #                            height = 'calc(100vh - 90px)'
+                                                 #                       )
                                                  ),
                                         tabPanel("City comparison"
                                         )
