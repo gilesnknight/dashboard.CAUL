@@ -21,6 +21,7 @@ app_ui <- function(request) {
     
     
     navbarPage(windowTitle = "CAUL Dashboard",
+               id = "tabs",
                title = span(
                  img(
                    src = "www/logo.png",
@@ -32,18 +33,22 @@ app_ui <- function(request) {
                
                tabPanel("Perth",
                         sidebarLayout(
+                          
                           sidebarPanel(
                             width = 5,
-                            waiter::waiter_show_on_load(color = '#008346', tags$img(
-                              src="www/logo.png",
-                              height=150,
-                              id = "myImage")),
-                            waiter::waiter_hide_on_render("PER_SSC_map"),
-                            # selectizeInput(
-                            #   'PER_SSC_dropdown', label = NULL, choices = PER_SSC_DATA$SSC_NAME16,
-                            #   options = list(maxOptions = 5)
-                            # ),
-                            leaflet::leafletOutput(outputId = "PER_SSC_map", height = "calc(100vh - 80px)")
+                            # waiter::waiter_show_on_load(color = '#008346', tags$img(
+                            #   src="www/logo.png",
+                            #   height=150,
+                            #   id = "myImage")),
+                            # waiter::waiter_hide_on_render("PER_SSC_map"),
+                            #tags$style(type="text/css", ".selectize-input{ z-index: 0; }"),
+                            #"Selected suburb: ",
+                            selectizeInput(
+                              'PER_SSC_dropdown', label = "Selected suburb: ", choices = PER_SSC_DATA$SSC_NAME16,
+                              selected = 'Perth (WA)',
+                              options = list(maxOptions = 5)
+                            ),
+                            leaflet::leafletOutput(outputId = "PER_SSC_map", height = "calc(90vh - 80px)")
                             
                             
                           ),
@@ -56,10 +61,16 @@ app_ui <- function(request) {
                                                                        height = 'calc(97vh - 90px)')
                                                  
                                         ),
-                                        tabPanel("Suburb comparison"
-                                                 # ggiraph::girafeOutput("PER_psudoscatter",
-                                                 #                            height = 'calc(100vh - 90px)'
-                                                 #                       )
+                                        tabPanel("Suburb comparison",
+                                                 selectInput("density", 
+                                                             label = "Select density type:", 
+                                                             c("Gross density" = "GrDwDens",
+                                                               "Urban dwelling density" = "UrbDwDens",
+                                                               "Residential dwelling density" = "ResDwDens")
+                                                 ),
+                                                 ggiraph::girafeOutput("PER_densityScatter",
+                                                                            height = 'calc(97vh - 90px)'
+                                                                       )
                                                  ),
                                         tabPanel("City comparison"
                                         )
@@ -74,44 +85,36 @@ app_ui <- function(request) {
                         sidebarLayout(
                           sidebarPanel(
                             width = 5,
-                            waiter::waiter_show_on_load(color = '#008346', tags$img(
-                              src="www/logo.png", 
-                              height=150,
-                              id = "myImage2")),
-                            waiter::waiter_hide_on_render("MEL_SSC_map"),
                             leaflet::leafletOutput(outputId = "MEL_SSC_map", height = "calc(100vh - 80px)")
                           ),
+                          
                           mainPanel(
                             width = 7,
                             tabsetPanel(type = "tabs",
-                                        tabPanel("Piecharts",
-                                                 fluidRow(
-                                                   column(6, plotly::plotlyOutput("MEL_vegtype_pie",
-                                                                                  height = 'calc(50vh - 57.5px)')),
-                                                   column(6, plotly::plotlyOutput("MEL_privpubl_pie",
-                                                                                  height = 'calc(50vh - 57.5px)'))
+                                        id = 'MEL_tabs',
+                                        tabPanel("Land-use",
+                                                 ggiraph::girafeOutput("MEL_barcharts",
+                                                                       height = 'calc(97vh - 90px)')
+                                                 
+                                        ),
+                                        tabPanel("Suburb comparison",
+                                                 selectInput("density", 
+                                                             label = "Select density type:", 
+                                                             c("Gross density" = "GrDwDens",
+                                                               "Urban dwelling density" = "UrbDwDens",
+                                                               "Residential dwelling density" = "ResDwDens")
                                                  ),
-                                                 fluidRow(
-                                                   column(6, plotly::plotlyOutput("MEL_LU_pie",
-                                                                                  height = 'calc(50vh - 57.5px)')),
-                                                   column(6, plotly::plotlyOutput("MEL_TrLU_pie",
-                                                                                  height = 'calc(50vh - 57.5px)'))
+                                                 ggiraph::girafeOutput("MEL_densityScatter",
+                                                                       height = 'calc(97vh - 90px)'
                                                  )
                                         ),
-                                        
-                                        tabPanel("Scatters",
-                                                 fluidRow(
-                                                   column(12, plotly::plotlyOutput("MEL_SSC_gross_scatter",
-                                                                                   height = 'calc(34vh - 46px)')),
-                                                   column(12, plotly::plotlyOutput("MEL_SSC_urban_scatter",
-                                                                                   height = 'calc(34vh - 46px)')),
-                                                   column(12, plotly::plotlyOutput("MEL_SSC_res_scatter",
-                                                                                   height = 'calc(34vh - 46px)'))
-                                                 )
-                                                 
+                                        tabPanel("City comparison"
                                         )
+                                        
+                                        
                             )
                           )
+                          
                         )
                ),
                tabPanel("Sydney",

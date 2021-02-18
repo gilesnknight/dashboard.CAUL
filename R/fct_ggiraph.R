@@ -100,13 +100,16 @@ landuseBarcharts <- function(vegtypeData,
       guide = ggplot2::guide_legend(reverse = TRUE)
     ) +
     ggplot2::coord_flip() +
-    ggplot2::scale_y_continuous(position = "left", labels = scales::percent) +
+    ggplot2::scale_y_continuous(position = "left", labels = scales::percent,
+                                limits=c(0, 1),
+                                expand = c(0, 0)) +
+    ggplot2::scale_x_continuous(expand = c(0, 0)) +
     ggplot2::ggtitle("Vegetation type") +
     ggplot2::theme_classic() +
     ggplot2::theme(
       axis.title.x = ggplot2::element_blank(),
-      axis.text.x = ggplot2::element_blank(),
-      axis.ticks.x = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(vjust=0.5),
+      #axis.ticks.x = ggplot2::element_blank(),
       axis.line.x = ggplot2::element_blank(),
       axis.title.y = ggplot2::element_blank(),
       axis.text.y = ggplot2::element_blank(),
@@ -114,8 +117,8 @@ landuseBarcharts <- function(vegtypeData,
       axis.line.y = ggplot2::element_blank(),
       legend.title = ggplot2::element_blank(),
       legend.text = ggplot2::element_text(size = 8),
-      legend.key.size = ggplot2::unit(0.5, "cm"),
-      legend.margin = ggplot2::margin(0, 0, 0, 380),
+      legend.key.size = ggplot2::unit(0.4, "cm"),
+      legend.margin = ggplot2::margin(0, 0, 0, 580),
       plot.title = ggplot2::element_text(face = 'bold',
                                          vjust = -5.5),
       legend.position = "top"
@@ -133,13 +136,16 @@ landuseBarcharts <- function(vegtypeData,
       guide = ggplot2::guide_legend(reverse = TRUE)
     ) +
     ggplot2::coord_flip() +
-    ggplot2::scale_y_continuous(position = "left", labels = scales::percent) +
+    ggplot2::scale_y_continuous(position = "left", labels = scales::percent,
+                                limits=c(0, 1),
+                                expand = c(0, 0)) +
+    ggplot2::scale_x_continuous(expand = c(0, 0)) +
     ggplot2::ggtitle("Tenure split") +
     ggplot2::theme_classic() +
     ggplot2::theme(
       axis.title.x = ggplot2::element_blank(),
-      axis.text.x = ggplot2::element_blank(),
-      axis.ticks.x = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(vjust=0.5),
+      #axis.ticks.x = ggplot2::element_blank(),
       axis.line.x = ggplot2::element_blank(),
       axis.title.y = ggplot2::element_blank(),
       axis.text.y = ggplot2::element_blank(),
@@ -147,8 +153,8 @@ landuseBarcharts <- function(vegtypeData,
       axis.line.y = ggplot2::element_blank(),
       legend.title = ggplot2::element_blank(),
       legend.text = ggplot2::element_text(size = 8),
-      legend.key.size = ggplot2::unit(0.5, "cm"),
-      legend.margin = ggplot2::margin(0, 0, 0, 470),
+      legend.key.size = ggplot2::unit(0.4, "cm"),
+      legend.margin = ggplot2::margin(0, 0, 0, 680),
       plot.title = ggplot2::element_text(face = 'bold',
                                          vjust = -5.5),
       legend.position = "top"
@@ -162,17 +168,20 @@ landuseBarcharts <- function(vegtypeData,
                                   stat = "identity",
                                   width = 1) +
     ggplot2::scale_fill_manual(
-      values = c('#5CE8C7', '#FFED6F', '#70AD47', '#BC80BD', '#F5F5F5', '#FB8072', '#B3DE69', '#E3FF8A', '#FDB462', '#264478', '#DAE3F3'),
-      guide = ggplot2::guide_legend(reverse = TRUE, nrow = 2)
+      values = c('#e3ff8a', '#a6cee3', '#828282', '#fbd4f2', '#5ce8c7', '#ffed6f', '#bc80bd', '#fb8072', '#dcdcdc', '#b3de69', '#fdb462'),
+      guide = ggplot2::guide_legend(reverse = TRUE, nrow = 1)
     ) +
     ggplot2::coord_flip() +
-    ggplot2::scale_y_continuous(position = "left", labels = scales::percent) +
+    ggplot2::scale_y_continuous(position = "left", labels = scales::percent,
+                                limits=c(0, 1),
+                                expand = c(0, 0)) +
+    ggplot2::scale_x_continuous(expand = c(0, 0)) +
     ggplot2::ggtitle("Land-use split") +
     ggplot2::theme_classic() +
     ggplot2::theme(
       axis.title.x = ggplot2::element_blank(),
-      axis.text.x = ggplot2::element_blank(),
-      axis.ticks.x = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(vjust=0.5),
+      #axis.ticks.x = ggplot2::element_blank(),
       axis.line.x = ggplot2::element_blank(),
       axis.title.y = ggplot2::element_blank(),
       axis.text.y = ggplot2::element_blank(),
@@ -180,9 +189,9 @@ landuseBarcharts <- function(vegtypeData,
       axis.line.y = ggplot2::element_blank(),
       legend.title = ggplot2::element_blank(),
       legend.text = ggplot2::element_text(size = 8),
-      legend.key.size = ggplot2::unit(0.5, "cm"),
+      legend.key.size = ggplot2::unit(0.4, "cm"),
       legend.text.align = 0,
-      legend.margin = ggplot2::margin(0, 0, 0, 150),
+      legend.margin = ggplot2::margin(0, 0, 0, 120),
       plot.title = ggplot2::element_text(face = 'bold',
                                          vjust = -5.5),
       legend.position = "top"
@@ -197,17 +206,20 @@ landuseBarcharts <- function(vegtypeData,
                                   stat = "identity",
                                   width = 1) +
     ggplot2::scale_fill_manual(
-      values = c('#5CE8C7', '#FFED6F', '#70AD47', '#BC80BD', '#F5F5F5', '#FB8072', '#B3DE69', '#E3FF8A', '#FDB462', '#264478', '#DAE3F3'),
+      values = c('#e3ff8a', '#a6cee3', '#828282', '#fbd4f2', '#5ce8c7', '#ffed6f', '#bc80bd', '#fb8072', '#dcdcdc', '#b3de69', '#fdb462'),
       guide = ggplot2::guide_legend(reverse = TRUE)
     ) +
     ggplot2::coord_flip() +
-    ggplot2::scale_y_continuous(position = "left", labels = scales::percent) +
+    ggplot2::scale_y_continuous(position = "left", labels = scales::percent,
+                                limits=c(0, 1),
+                                expand = c(0, 0)) +
+    ggplot2::scale_x_continuous(expand = c(0, 0)) +
     ggplot2::ggtitle("Tree land-use split") +
     ggplot2::theme_classic() +
     ggplot2::theme(
       axis.title.x = ggplot2::element_blank(),
-      axis.text.x = ggplot2::element_blank(), #
-      axis.ticks.x = ggplot2::element_blank(), #
+      axis.text.x = ggplot2::element_text(vjust=0.5),
+      #axis.ticks.x = ggplot2::element_blank(),
       axis.line.x = ggplot2::element_blank(), #
       axis.title.y = ggplot2::element_blank(),
       axis.text.y = ggplot2::element_blank(),
@@ -252,5 +264,129 @@ filter_barchart <- function(df, columnsToPlot, newNames, order){
   filtered_barchart[['type']] <- base::factor(newNames, levels = order)
   filtered_barchart[['percent']] <- filtered_barchart[['percent']]/100
   filtered_barchart
+}
+
+densityLabel <- function(xAxis){
+  if(xAxis=='GrDwDens'){
+    return("Gross density")
+  } else if(xAxis=='UrbDwDens'){
+    return("Urban dwelling density")
+  } else if(xAxis=='ResDwDens'){
+    return("Residential dwelling density")
+  } else {
+    return("Density")
+  }
+}
+
+densityScatter <- function(scatter_selected_data,
+                           scatter_quint_data,
+                           scatter_remaining_data,
+                           structureName,
+                           uniqueID,
+                           xAxis,
+                           yAxis){
+  plot <- ggplot2::ggplot() +
+    ggiraph::geom_point_interactive(
+      ggplot2::aes(
+        x = scatter_remaining_data[[xAxis]],
+        y = scatter_remaining_data[[yAxis]],
+        data_id = scatter_remaining_data[[uniqueID]],
+        tooltip = paste0(
+          "<b>",scatter_remaining_data[[structureName]],"</b>",
+          "<br>",
+          "Different density: ",
+          base::round(scatter_remaining_data[[xAxis]],1),
+          "<br>",
+          "Tree canopy: ",
+          base::round(scatter_remaining_data[[xAxis]],1),
+          "%"
+        )
+      ),
+      color = "#a3a3a3",
+      alpha = 0.75,
+      size = 4,
+      shape=16,
+      stroke = 0
+    ) +
+    ggiraph::geom_point_interactive(
+      ggplot2::aes(
+        x = scatter_quint_data[[xAxis]],
+        y = scatter_quint_data[[yAxis]],
+        data_id = scatter_quint_data[[uniqueID]],
+        tooltip = paste0(
+          "<b>",scatter_quint_data[[structureName]],"</b>",
+          "<br>",
+          "Similar density: ",
+          base::round(scatter_quint_data[[xAxis]],1),
+          "<br>",
+          "Tree canopy: ",
+          base::round(scatter_quint_data[[xAxis]],1),
+          "%"
+        )
+      ),
+      color = "#4f84e0",
+      alpha = 0.75,
+      size = 4,
+      shape=16,
+      stroke = 0
+    ) +
+    ggiraph::geom_point_interactive(
+      ggplot2::aes(
+        x = scatter_selected_data[[xAxis]],
+        y = scatter_selected_data[[yAxis]],
+        data_id = scatter_selected_data[[uniqueID]],
+        tooltip = paste0(
+          "<b>",scatter_selected_data[[structureName]],"</b>",
+          "<br>",
+          "Density: ",
+          base::round(scatter_selected_data[[xAxis]],1),
+          "<br>",
+          "Tree canopy: ",
+          base::round(scatter_selected_data[[xAxis]],1),
+          "%"
+        )
+      ),
+      color = "#fc3003",
+      size = 4,
+      shape=16,
+      stroke = 0
+    ) +
+    ggplot2::labs(x = densityLabel(xAxis), y = "Tree canopy cover") +
+    ggplot2::scale_x_continuous(#label = scales::percent_format(accuracy = 1)
+                                #expand = c(0, 0.01)
+    ) +
+    ggplot2::scale_y_continuous(label = scales::percent_format(accuracy = 1, scale = 1)
+                                #expand = c(0, 0)
+    ) +
+    ggplot2::theme_classic() 
+  
+  girafe <- ggiraph::girafe(
+    code = print(plot),
+    fonts = list(serif = "Helvetica"),
+    width_svg = 11, 
+    height_svg =7.75,
+    options = list(
+      ggiraph::opts_selection(type = "single", only_shiny = FALSE),
+      ggiraph::opts_toolbar(saveaspng = FALSE),
+      ggiraph::opts_tooltip(
+        use_fill = TRUE,
+        css = "background-color:gray;
+                      color:white;
+                      font-style:italic;
+                      padding:10px;
+                      font-family: Helvetica;
+                      border-radius:5px;"
+      ),
+      ggiraph::opts_sizing(rescale = TRUE, width = 1)
+    )
+  )
+  
+  girafe <- ggiraph::girafe_options(
+    girafe,
+    ggiraph::opts_hover(css = "stroke:rgba(207, 207, 207, 0.6);r:3.5pt;")
+  )
+  
+  girafe
+  
 }
 
