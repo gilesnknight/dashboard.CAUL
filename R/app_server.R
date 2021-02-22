@@ -11,12 +11,8 @@
 
 # IMPORT DATA --------------------------------------------------------------
 
-
-
 PER_SSC_GEO <- sf::st_read("inst/extdata/PER_SSC_GEO.gpkg")
 PER_SSC_DATA <- base::readRDS("inst/extdata/PER_SSC_DATA.rds")
-# PER_SSC_DATA <-  dplyr::mutate(PER_SSC_DATA, yaxis_ran = runif(nrow(PER_SSC_DATA), min = 1.98, max =
-#                                     2.02))
 
 MEL_SSC_GEO <- sf::st_read("inst/extdata/MEL_SSC_GEO.gpkg")
 MEL_SSC_DATA <- base::readRDS("inst/extdata/MEL_SSC_DATA.rds")
@@ -29,6 +25,10 @@ SYD_SSC_DATA <- base::readRDS("inst/extdata/SYD_SSC_DATA.rds")
 # Server ------------------------------------------------------------------
 
 app_server <- function( input, output, session ) {
+  
+  observeEvent(input$navbar, {
+    print(input$navbar)
+  })
 
 # Waiter ----------------------------------------------------------------
 
@@ -55,37 +55,66 @@ app_server <- function( input, output, session ) {
 
 
   
-# PER SSC -----------------------------------------------------------------
-  
-# PER SSC map
-  
+# PER SSC Map -----------------------------------------------------------------
+
   # Output PER basemap
   output$PER_SSC_map <- renderLeaflet({
     base_map()
   })
-
-  # Add PER SSC polygons to PER basemap
-  map_add_polys(
-    df = PER_SSC_GEO,
-    mapID = "PER_SSC_map",
-    structureID = PER_SSC_GEO$SSC_CODE16,
-    structureName = PER_SSC_GEO$SSC_NAME16,
-    structureTree = PER_SSC_GEO$PerAnyTree,
-    structureShrub = PER_SSC_GEO$PerGrass,
-    structureGrass = PER_SSC_GEO$PerShrub,
-    minZoom = 8,
-    maxZoom = 14,
-    lng1 = 115.191,
-    lat1 = -31.243,
-    lng2 = 116.743,
-    lat2 = -33.116,
-    viewLng = 115.850,
-    viewLat = -32.100,
-    viewZoom = 10
-  )
   
+  # Removes SYD SSC polygons when SYD tab is not visible
+  observeEvent(input$navbar,{
+    req(input$navbar!='Perth')
+    
+    leafletProxy("PER_SSC_map", data = PER_SSC_GEO) %>%
+      clearShapes() %>%
+      clearControls()
+  })
+
+  # Add PER SSC polygons to PER basemap when PER tab is visible
+  observeEvent(input$navbar,{
+    req(input$navbar=='Perth')
+
+    map_add_polys(
+      df = PER_SSC_GEO,
+      mapID = "PER_SSC_map",
+      structureID = PER_SSC_GEO$SSC_CODE16,
+      structureName = PER_SSC_GEO$SSC_NAME16,
+      structureTree = PER_SSC_GEO$PerAnyTree,
+      structureShrub = PER_SSC_GEO$PerGrass,
+      structureGrass = PER_SSC_GEO$PerShrub,
+      minZoom = 8,
+      maxZoom = 14,
+      lng1 = 115.191,
+      lat1 = -31.243,
+      lng2 = 116.743,
+      lat2 = -33.116,
+      viewLng = 115.850,
+      viewLat = -32.100,
+      viewZoom = 10
+    )
+    
+    leaflet::leafletProxy("PER_SSC_map") %>%
+      leaflet::addPolylines(
+        data = (PER_SSC_GEO[PER_SSC_GEO$SSC_CODE16 ==  PER_SSC$active,]),
+        fillOpacity = 0,
+        color = "red",
+        opacity = 1,
+        weight = 3.5,
+        stroke = T,
+        layerId = "GCC",
+        options = pathOptions(interactive = FALSE)
+      )
+    
+  })
+
+# PER SSC Plots -----------------------------------------------------------
+
+
+    
   # Output PER bar charts
   output$PER_barcharts <- ggiraph::renderGirafe({
+    
       # Default PER bar chart data 
       PER_SSC_bar_data <- filter_SSC(
         df = PER_SSC_DATA,
@@ -198,877 +227,14 @@ app_server <- function( input, output, session ) {
         scatter_remaining_data = PER_SSC_scatter_remaining_data,
         uniqueID = 'SSC_CODE16',
         yAxis = 'PerAnyTree',
-        xAxis = input$density,
+        xAxis = input$PER_dens,
         structureName = 'SSC_NAME16'
       )
   })
 
-# MEL SSC -----------------------------------------------------------------
-# 
-#   # MEL SSC map
-#   
-#   # Output MEL basemap
-#   output$MEL_SSC_map <- renderLeaflet({
-#     base_map()
-#   })
-#   
-#   outputOptions(output, "MEL_SSC_map", 
-#                 suspendWhenHidden = FALSE)
-#   
-#   # Add MEL SSC polygons to MEL basemap
-#   observeEvent(input$tabs, {
-#     map_add_polys(
-#       df = MEL_SSC_GEO,
-#       mapID = "MEL_SSC_map",
-#       structureID = MEL_SSC_GEO$SSC_CODE16,
-#       structureName = MEL_SSC_GEO$SSC_NAME16,
-#       structureTree = MEL_SSC_GEO$PerAnyTree,
-#       structureShrub = MEL_SSC_GEO$PerGrass,
-#       structureGrass = MEL_SSC_GEO$PerShrub,
-#       minZoom = 8,
-#       maxZoom = 14,
-#       lng1 = 144.39203,
-#       lat1 = -37.31006,
-#       lng2=145.80494,
-#       lat2= -38.53502,
-#       viewLng = 144.96592,
-#       viewLat = -37.83361,
-#       viewZoom = 10
-#     )
-#   })
-# 
-#   
-# 
-#   
-#   # Output MEL piecharts - deprecated
-#   output$MEL_piecharts <- ggiraph::renderGirafe({
-#     if (is.null(MEL_map_SSC$click)) {
-#       
-#       # Default MEL pie chart data - 51218
-#       MEL_SSC_pie_data <- filter_SSC(
-#         df = MEL_SSC_DATA,
-#         uniqueID = MEL_SSC_DATA$SSC_CODE16,
-#         clickID = 51218
-#       )
-#       
-#       # Filters MEL_SSC_pie_data for the vegetation-type piechart
-#       MEL_vegtype_pie_data <- filter_piechart(
-#         MEL_SSC_pie_data,
-#         columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg')
-#       )
-#       
-#       # Filters MEL_SSC_pie_data for the land tenure piechart
-#       MEL_privpubl_pie_data <- filter_piechart(
-#         MEL_SSC_pie_data,
-#         columnsToPlot = c('TrPriv', 'TrPubl')
-#       )
-#       
-#       # Filters MEL_SSC_pie_data for the land use piechart
-#       MEL_landuse_pie_data <- filter_piechart(MEL_SSC_pie_data,
-#                                               columnsToPlot = c('ArResPer', 'ArParkPer', 'ArInfrPer', 'ArOthPer',
-#                                                                 'ArIndlPer', 'ArEduPer', 'ArCommPer', 'ArHospPer',
-#                                                                 'ArTransPer', 'ArWatPer', 'ArPrimPPer')
-#       )
-#       
-#       # Filters MEL_SSC_pie_data for the TREE land use piechart
-#       MEL_treelanduse_pie_data <- filter_piechart(MEL_SSC_pie_data,
-#                                                   columnsToPlot = c('TrResPer', 'TrParkPer', 'TrInfrPer', 'TrOthPer',
-#                                                                     'TrIndlPer', 'TrEduPer', 'TrCommPer', 'TrHospPer',
-#                                                                     'TrTransPer', 'TrWatPer', 'TrPrimPPer')
-#       )
-#       
-#       # Plots Piecharts
-#       landusePiecharts(vegtypeData = MEL_vegtype_pie_data,
-#                        vegtypeVals = MEL_vegtype_pie_data$percent,
-#                        vegtypeGroups = MEL_vegtype_pie_data$type,
-#                        tenureData = MEL_privpubl_pie_data, 
-#                        tenureVals = MEL_privpubl_pie_data$percent, 
-#                        tenureGroups = MEL_privpubl_pie_data$type,
-#                        landuseData = MEL_landuse_pie_data,
-#                        landuseVals = MEL_landuse_pie_data$percent,
-#                        landuseGroups = MEL_landuse_pie_data$type,
-#                        treelanduseData = MEL_treelanduse_pie_data,
-#                        treelanduseVals = MEL_treelanduse_pie_data$percent,
-#                        treelanduseGroups = MEL_treelanduse_pie_data$type,
-#                        activeSSCname = MEL_active_SSC$name)
-#     }
-#     else {
-#       
-#       # MEL pie chart data - updates on map click
-#       MEL_SSC_pie_data <- filter_SSC(
-#         df = MEL_SSC_DATA,
-#         uniqueID = MEL_SSC_DATA$SSC_CODE16,
-#         clickID = MEL_map_SSC$click
-#       )
-#       
-#       # Filters MEL_SSC_pie_data for the vegetation-type piechart
-#       MEL_vegtype_pie_data <- filter_piechart(
-#         MEL_SSC_pie_data,
-#         columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg')
-#       )
-#       
-#       # Filters MEL_SSC_pie_data for the land tenure piechart
-#       MEL_privpubl_pie_data <- filter_piechart(
-#         MEL_SSC_pie_data,
-#         columnsToPlot = c('TrPriv', 'TrPubl')
-#       )
-#       
-#       # Filters MEL_SSC_pie_data for the land use piechart
-#       MEL_landuse_pie_data <- filter_piechart(MEL_SSC_pie_data,
-#                                               columnsToPlot = c('ArResPer', 'ArParkPer', 'ArInfrPer', 'ArOthPer',
-#                                                                 'ArIndlPer', 'ArEduPer', 'ArCommPer', 'ArHospPer',
-#                                                                 'ArTransPer', 'ArWatPer', 'ArPrimPPer')
-#       )
-#       
-#       # Filters MEL_SSC_pie_data for the TREE land use piechart
-#       MEL_treelanduse_pie_data <- filter_piechart(MEL_SSC_pie_data,
-#                                                   columnsToPlot = c('TrResPer', 'TrParkPer', 'TrInfrPer', 'TrOthPer',
-#                                                                     'TrIndlPer', 'TrEduPer', 'TrCommPer', 'TrHospPer',
-#                                                                     'TrTransPer', 'TrWatPer', 'TrPrimPPer')
-#       )
-#       
-#       # Plots Piecharts
-#       landusePiecharts(
-#         vegtypeData = MEL_vegtype_pie_data,
-#         vegtypeVals = MEL_vegtype_pie_data$percent,
-#         vegtypeGroups = MEL_vegtype_pie_data$type,
-#         tenureData = MEL_privpubl_pie_data, 
-#         tenureVals = MEL_privpubl_pie_data$percent, 
-#         tenureGroups = MEL_privpubl_pie_data$type,
-#         landuseData = MEL_landuse_pie_data,
-#         landuseVals = MEL_landuse_pie_data$percent,
-#         landuseGroups = MEL_landuse_pie_data$type,
-#         treelanduseData = MEL_treelanduse_pie_data,
-#         treelanduseVals = MEL_treelanduse_pie_data$percent,
-#         treelanduseGroups = MEL_treelanduse_pie_data$type,
-#         activeSSCname = MEL_active_SSC$name
-#       )
-#     }
-#   })
-#   
-#   # Output MEL psudoscatter - depreceated
-#   output$MEL_psudoscatter <- ggiraph::renderGirafe({
-#     if (is.null(MEL_map_SSC$click)) {
-#       
-#       # Default MEL scatter chart data - 51218
-#       MEL_SSC_scatter_data <- filter_scatter(
-#         MEL_SSC_DATA,
-#         columnsToPlot = c(
-#           'SSC_CODE16',
-#           'SSC_NAME16',
-#           'PerAnyTree',
-#           'GrDwDens',
-#           'GrDenQuint',
-#           'UrbDwDens',
-#           'UrbDenQuin',
-#           'ResDwDens',
-#           'ResDenQuin',
-#           'yaxis_ran'
-#         ),
-#         uniqueID = 51218
-#       )
-#       
-#       # Filters MEL_SSC_scatter_data to just the selected suburb
-#       MEL_SSC_scatter_selected_data <- scatter_selected_data(df = MEL_SSC_scatter_data,
-#                                                              uniqueID = 'SSC_CODE16',
-#                                                              activeID = 51218)
-#       # Returns the selected suburb's quintile
-#       MEL_SSC_scatter_selected_quint <- scatter_selected_quint(df = MEL_SSC_scatter_selected_data,
-#                                                                quintileNum = 'GrDenQuint')
-#       # Filters MEL_SSC_scatter_data the above quintile, minus the selected suburb
-#       MEL_SSC_scatter_quint_data <- scatter_quint_data(df = MEL_SSC_scatter_data,
-#                                                        quintileNum = 'GrDenQuint',
-#                                                        selectedQuintile = MEL_SSC_scatter_selected_quint,
-#                                                        uniqueID = 'SSC_CODE16',
-#                                                        activeID = 51218)
-#       # Filters MEL_SSC_scatter_data to remaining suburbs in other quintiles
-#       MEL_SSC_scatter_remaining_data <- scatter_remaining_data(df = MEL_SSC_scatter_data,
-#                                                                quintileNum = 'GrDenQuint',
-#                                                                selectedQuintile = MEL_SSC_scatter_selected_quint)
-#       # Plots scatter
-#       pseudoScatter(
-#         scatter_selected_data = MEL_SSC_scatter_selected_data,
-#         scatter_quint_data = MEL_SSC_scatter_quint_data,
-#         scatter_remaining_data = MEL_SSC_scatter_remaining_data,
-#         uniqueID = 'SSC_CODE16',
-#         xAxis = 'PerAnyTree',
-#         yAxis = 'yaxis_ran',
-#         structureName = 'SSC_NAME16',
-#         density = 'GrDwDens'
-#       )
-#       
-#     }
-#     else {
-#       # Default MEL pie chart data - 51218
-#       MEL_SSC_scatter_data <- filter_scatter(
-#         MEL_SSC_DATA,
-#         columnsToPlot = c(
-#           'SSC_CODE16',
-#           'SSC_NAME16',
-#           'PerAnyTree',
-#           'GrDwDens',
-#           'GrDenQuint',
-#           'UrbDwDens',
-#           'UrbDenQuin',
-#           'ResDwDens',
-#           'ResDenQuin',
-#           'yaxis_ran'
-#         ),
-#         uniqueID = MEL_map_SSC$click
-#       )
-#       
-#       # Filters MEL_SSC_scatter_data to just the selected suburb
-#       MEL_SSC_scatter_selected_data <- scatter_selected_data(df = MEL_SSC_scatter_data,
-#                                                              uniqueID = 'SSC_CODE16',
-#                                                              activeID = MEL_map_SSC$click)
-#       # Returns the selected suburb's quintile
-#       MEL_SSC_scatter_selected_quint <- scatter_selected_quint(df = MEL_SSC_scatter_selected_data,
-#                                                                quintileNum = 'GrDenQuint')
-#       # Filters MEL_SSC_scatter_data the above quintile, minus the selected suburb
-#       MEL_SSC_scatter_quint_data <- scatter_quint_data(df = MEL_SSC_scatter_data,
-#                                                        quintileNum = 'GrDenQuint',
-#                                                        selectedQuintile = MEL_SSC_scatter_selected_quint,
-#                                                        uniqueID = 'SSC_CODE16',
-#                                                        activeID = MEL_map_SSC$click)
-#       # Filters MEL_SSC_scatter_data to remaining suburbs in other quintiles
-#       MEL_SSC_scatter_remaining_data <- scatter_remaining_data(df = MEL_SSC_scatter_data,
-#                                                                quintileNum = 'GrDenQuint',
-#                                                                selectedQuintile = MEL_SSC_scatter_selected_quint)
-#       # Plots scatter
-#       pseudoScatter(
-#         scatter_selected_data = MEL_SSC_scatter_selected_data,
-#         scatter_quint_data = MEL_SSC_scatter_quint_data,
-#         scatter_remaining_data = MEL_SSC_scatter_remaining_data,
-#         uniqueID = 'SSC_CODE16',
-#         xAxis = 'PerAnyTree',
-#         yAxis = 'yaxis_ran',
-#         structureName = 'SSC_NAME16',
-#         density = 'GrDwDens'
-#       )
-#       
-#     }
-#   })
-#   
-#   # Output MEL bar charts
-#   output$MEL_barcharts <- ggiraph::renderGirafe({
-#     if (is.null(MEL_map_SSC$click)) {
-#       
-#       # Default MEL bar chart data - 51218
-#       MEL_SSC_bar_data <- filter_SSC(
-#         df = MEL_SSC_DATA,
-#         uniqueID = MEL_SSC_DATA$SSC_CODE16,
-#         clickID = 51218
-#       )
-#       
-#       # Filters MEL_SSC_bar_data for the vegetation-type bar chart
-#       MEL_vegtype_bar_data <- filter_barchart(
-#         MEL_SSC_bar_data,
-#         columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg'),
-#         newNames = c('Grass', 'Shrub', 'Tree', 'Non-veg'),
-#         order = c('Non-veg', 'Grass', 'Shrub', 'Tree')
-#       )
-#       
-#       
-#       # Filters MEL_SSC_pie_data for the land tenure bar chart
-#       MEL_privpubl_bar_data <- filter_barchart(
-#         MEL_SSC_bar_data,
-#         columnsToPlot = c('TrPriv', 'TrPubl'),
-#         newNames = c('Private', 'Public'),
-#         order = c('Private', 'Public')
-#       )
-#       
-#       # Filters MEL_SSC_bar_data for the land use bar chart
-#       MEL_landuse_bar_data <- filter_piechart(MEL_SSC_bar_data,
-#                                               columnsToPlot = c('ArResPer', 'ArParkPer', 'ArInfrPer', 'ArOthPer',
-#                                                                 'ArIndlPer', 'ArEduPer', 'ArCommPer', 'ArHospPer',
-#                                                                 'ArTransPer', 'ArWatPer', 'ArPrimPPer'),
-#                                               newNames = c('Residential', 'Parkland', 'Infrastructure', 'Other', 
-#                                                            'Industrial', 'Education', 'Commercial', 'Hospital', 
-#                                                            'Transport', 'Water', 'Primary Production'),
-#                                               order = c('Primary Production', 'Water','Transport', 
-#                                                         'Hospital', 'Commercial','Education',
-#                                                         'Industrial','Other', 'Infrastructure',
-#                                                         'Parkland','Residential')
-#       )
-#       
-#       # Filters MEL_SSC_bar_data for the TREE land use bar chart
-#       MEL_treelanduse_bar_data <- filter_piechart(MEL_SSC_bar_data,
-#                                                   columnsToPlot = c('TrResPer', 'TrParkPer', 'TrInfrPer', 'TrOthPer',
-#                                                                     'TrIndlPer', 'TrEduPer', 'TrCommPer', 'TrHospPer',
-#                                                                     'TrTransPer', 'TrWatPer', 'TrPrimPPer'),
-#                                                   newNames = c('Residential', 'Parkland', 'Infrastructure', 'Other', 
-#                                                                'Industrial', 'Education', 'Commercial', 'Hospital', 
-#                                                                'Transport', 'Water', 'Primary Production'),
-#                                                   order = c('Primary Production', 'Water','Transport', 
-#                                                             'Hospital', 'Commercial','Education',
-#                                                             'Industrial','Other', 'Infrastructure',
-#                                                             'Parkland','Residential')
-#       )
-#       
-#       # Plots bar charts
-#       landuseBarcharts(vegtypeData = MEL_vegtype_bar_data,
-#                        vegtypeVals = MEL_vegtype_bar_data$percent,
-#                        vegtypeGroups = MEL_vegtype_bar_data$type,
-#                        tenureData = MEL_privpubl_bar_data, 
-#                        tenureVals = MEL_privpubl_bar_data$percent, 
-#                        tenureGroups = MEL_privpubl_bar_data$type,
-#                        landuseData = MEL_landuse_bar_data,
-#                        landuseVals = MEL_landuse_bar_data$percent,
-#                        landuseGroups = MEL_landuse_bar_data$type,
-#                        treelanduseData = MEL_treelanduse_bar_data,
-#                        treelanduseVals = MEL_treelanduse_bar_data$percent,
-#                        treelanduseGroups = MEL_treelanduse_bar_data$type)
-#     }
-#     else {
-#       
-#       # Default MEL bar chart data 
-#       MEL_SSC_bar_data <- filter_SSC(
-#         df = MEL_SSC_DATA,
-#         uniqueID = MEL_SSC_DATA$SSC_CODE16,
-#         clickID = MEL_map_SSC$click
-#       )
-#       
-#       # Filters MEL_SSC_bar_data for the vegetation-type bar chart
-#       MEL_vegtype_bar_data <- filter_barchart(
-#         MEL_SSC_bar_data,
-#         columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg'),
-#         newNames = c('Grass', 'Shrub', 'Tree', 'Non-veg'),
-#         order = c('Non-veg', 'Grass', 'Shrub', 'Tree')
-#       )
-#       
-#       
-#       # Filters MEL_SSC_pie_data for the land tenure bar chart
-#       MEL_privpubl_bar_data <- filter_barchart(
-#         MEL_SSC_bar_data,
-#         columnsToPlot = c('TrPriv', 'TrPubl'),
-#         newNames = c('Private', 'Public'),
-#         order = c('Private', 'Public')
-#       )
-#       
-#       # Filters MEL_SSC_bar_data for the land use bar chart
-#       MEL_landuse_bar_data <- filter_barchart(MEL_SSC_bar_data,
-#                                               columnsToPlot = c('ArResPer', 'ArParkPer', 'ArInfrPer', 'ArOthPer',
-#                                                                 'ArIndlPer', 'ArEduPer', 'ArCommPer', 'ArHospPer',
-#                                                                 'ArTransPer', 'ArWatPer', 'ArPrimPPer'),
-#                                               newNames = c('Residential', 'Parkland', 'Infrastructure', 'Other', 
-#                                                            'Industrial', 'Education', 'Commercial', 'Hospital', 
-#                                                            'Transport', 'Water', 'Primary Production'),
-#                                               order = c('Primary Production', 'Water','Transport', 
-#                                                         'Hospital', 'Commercial','Education',
-#                                                         'Industrial','Other', 'Infrastructure',
-#                                                         'Parkland','Residential')
-#       )
-#       
-#       # Filters MEL_SSC_bar_data for the TREE land use bar chart
-#       MEL_treelanduse_bar_data <- filter_barchart(MEL_SSC_bar_data,
-#                                                   columnsToPlot = c('TrResPer', 'TrParkPer', 'TrInfrPer', 'TrOthPer',
-#                                                                     'TrIndlPer', 'TrEduPer', 'TrCommPer', 'TrHospPer',
-#                                                                     'TrTransPer', 'TrWatPer', 'TrPrimPPer'),
-#                                                   newNames = c('Residential', 'Parkland', 'Infrastructure', 'Other', 
-#                                                                'Industrial', 'Education', 'Commercial', 'Hospital', 
-#                                                                'Transport', 'Water', 'Primary Production'),
-#                                                   order = c('Primary Production', 'Water','Transport', 
-#                                                             'Hospital', 'Commercial','Education',
-#                                                             'Industrial','Other', 'Infrastructure',
-#                                                             'Parkland','Residential')
-#       )
-#       
-#       # Plots bar charts
-#       landuseBarcharts(vegtypeData = MEL_vegtype_bar_data,
-#                        vegtypeVals = MEL_vegtype_bar_data$percent,
-#                        vegtypeGroups = MEL_vegtype_bar_data$type,
-#                        tenureData = MEL_privpubl_bar_data, 
-#                        tenureVals = MEL_privpubl_bar_data$percent, 
-#                        tenureGroups = MEL_privpubl_bar_data$type,
-#                        landuseData = MEL_landuse_bar_data,
-#                        landuseVals = MEL_landuse_bar_data$percent,
-#                        landuseGroups = MEL_landuse_bar_data$type,
-#                        treelanduseData = MEL_treelanduse_bar_data,
-#                        treelanduseVals = MEL_treelanduse_bar_data$percent,
-#                        treelanduseGroups = MEL_treelanduse_bar_data$type)
-#     }
-#   })
-#   
-#   # Output MEL density scatters
-#   output$MEL_densityScatter <- ggiraph::renderGirafe({
-#     if (is.null(MEL_map_SSC$click)) {
-#       
-#       # Default MEL scatter chart data - 51218
-#       MEL_SSC_scatter_data <- filter_scatter(
-#         MEL_SSC_DATA,
-#         columnsToPlot = c(
-#           'SSC_CODE16',
-#           'SSC_NAME16',
-#           'PerAnyTree',
-#           'GrDwDens',
-#           'GrDenQuint',
-#           'UrbDwDens',
-#           'UrbDenQuin',
-#           'ResDwDens',
-#           'ResDenQuin'
-#         ),
-#         uniqueID = 51218
-#       )
-#       
-#       # Filters MEL_SSC_scatter_data to just the selected suburb
-#       MEL_SSC_scatter_selected_data <- scatter_selected_data(df = MEL_SSC_scatter_data,
-#                                                              uniqueID = 'SSC_CODE16',
-#                                                              activeID = 51218)
-#       # Returns the selected suburb's quintile
-#       MEL_SSC_scatter_selected_quint <- scatter_selected_quint(df = MEL_SSC_scatter_selected_data,
-#                                                                quintileNum = 'GrDenQuint')
-#       # Filters MEL_SSC_scatter_data the above quintile, minus the selected suburb
-#       MEL_SSC_scatter_quint_data <- scatter_quint_data(df = MEL_SSC_scatter_data,
-#                                                        quintileNum = 'GrDenQuint',
-#                                                        selectedQuintile = MEL_SSC_scatter_selected_quint,
-#                                                        uniqueID = 'SSC_CODE16',
-#                                                        activeID = 51218)
-#       # Filters MEL_SSC_scatter_data to remaining suburbs in other quintiles
-#       MEL_SSC_scatter_remaining_data <- scatter_remaining_data(df = MEL_SSC_scatter_data,
-#                                                                quintileNum = 'GrDenQuint',
-#                                                                selectedQuintile = MEL_SSC_scatter_selected_quint)
-#       # Plots scatter
-#       densityScatter(
-#         scatter_selected_data = MEL_SSC_scatter_selected_data,
-#         scatter_quint_data = MEL_SSC_scatter_quint_data,
-#         scatter_remaining_data = MEL_SSC_scatter_remaining_data,
-#         uniqueID = 'SSC_CODE16',
-#         yAxis = 'PerAnyTree',
-#         xAxis = input$density,
-#         structureName = 'SSC_NAME16'
-#       )
-#       
-#     }
-#     else {
-#       
-#       # MEL scatter chart data - MEL_map_SSC$click
-#       MEL_SSC_scatter_data <- filter_scatter(
-#         MEL_SSC_DATA,
-#         columnsToPlot = c(
-#           'SSC_CODE16',
-#           'SSC_NAME16',
-#           'PerAnyTree',
-#           'GrDwDens',
-#           'GrDenQuint',
-#           'UrbDwDens',
-#           'UrbDenQuin',
-#           'ResDwDens',
-#           'ResDenQuin'
-#         ),
-#         uniqueID = MEL_map_SSC$click
-#       )
-#       
-#       # Filters MEL_SSC_scatter_data to just the selected suburb
-#       MEL_SSC_scatter_selected_data <- scatter_selected_data(df = MEL_SSC_scatter_data,
-#                                                              uniqueID = 'SSC_CODE16',
-#                                                              activeID = MEL_map_SSC$click)
-#       # Returns the selected suburb's quintile
-#       MEL_SSC_scatter_selected_quint <- scatter_selected_quint(df = MEL_SSC_scatter_selected_data,
-#                                                                quintileNum = 'GrDenQuint')
-#       # Filters MEL_SSC_scatter_data the above quintile, minus the selected suburb
-#       MEL_SSC_scatter_quint_data <- scatter_quint_data(df = MEL_SSC_scatter_data,
-#                                                        quintileNum = 'GrDenQuint',
-#                                                        selectedQuintile = MEL_SSC_scatter_selected_quint,
-#                                                        uniqueID = 'SSC_CODE16',
-#                                                        activeID = MEL_map_SSC$click)
-#       # Filters MEL_SSC_scatter_data to remaining suburbs in other quintiles
-#       MEL_SSC_scatter_remaining_data <- scatter_remaining_data(df = MEL_SSC_scatter_data,
-#                                                                quintileNum = 'GrDenQuint',
-#                                                                selectedQuintile = MEL_SSC_scatter_selected_quint)
-#       # Plots scatter
-#       densityScatter(
-#         scatter_selected_data = MEL_SSC_scatter_selected_data,
-#         scatter_quint_data = MEL_SSC_scatter_quint_data,
-#         scatter_remaining_data = MEL_SSC_scatter_remaining_data,
-#         uniqueID = 'SSC_CODE16',
-#         yAxis = 'PerAnyTree',
-#         xAxis = input$density,
-#         structureName = 'SSC_NAME16'
-#       )
-#       
-#     }
-#   })
-    
-# SYD SSC -----------------------------------------------------------------
-#   
-# # SYD SSC map
-#   
-#   output$SYD_SSC_map <- renderLeaflet({
-#     canopy_map(df = SYD_SSC_GEO,
-#                structureIsSuburb = TRUE,
-#                structureID = SYD_SSC_GEO$SSC_CODE16,
-#                structureName = SYD_SSC_GEO$SSC_NAME16,
-#                structureTree = SYD_SSC_GEO$PerAnyTree,
-#                structureShrub = SYD_SSC_GEO$PerGrass,
-#                structureGrass = SYD_SSC_GEO$PerShrub,
-#                minZoom = 8,
-#                maxZoom = 14,
-#                lng1 = 150.37754,
-#                lat1 = -32.70499,
-#                lng2= 151.90976,
-#                lat2= -34.83072,
-#                viewLng = 151.24835,
-#                viewLat = -33.82814,
-#                viewZoom = 10
-#     )
-#   })
-#   
-#   # SYD SSC Tree Shrub Grass Non-veg piechart 
-#   
-#   SYD_vegtype_pie_data <- reactive({
-#     if(!is.null(SYD_map_SSC$click)){
-#       filter_piechart(SYD_SSC_DATA,
-#                       uniqueID = SYD_SSC_DATA$SSC_CODE16,
-#                       clickID = SYD_map_SSC$click,
-#                       columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg')
-#       )
-#     }
-#     else {
-#       return(NULL)
-#     }
-#   })
-#   
-#   output$SYD_vegtype_pie <- plotly::renderPlotly({
-#     SYD_vegtype_pie <- SYD_vegtype_pie_data()
-#     if(!is.null(SYD_vegtype_pie)){
-#       vegtype_pie(df = SYD_vegtype_pie,
-#                   pieVals = SYD_vegtype_pie$percent
-#       )
-#     }
-#     else {
-#       return(NULL)
-#     }
-#   })
-#   
-#   # SYD SSC Priv Publ piechart
-#   
-#   SYD_privpubl_pie_data <- reactive({
-#     if(!is.null(SYD_map_SSC$click)){
-#       filter_piechart(SYD_SSC_DATA,
-#                       uniqueID = SYD_SSC_DATA$SSC_CODE16,
-#                       clickID = SYD_map_SSC$click,
-#                       columnsToPlot = c('TrPriv', 'TrPubl')
-#       )
-#     }
-#     else {
-#       return(NULL)
-#     }
-#   })
-#   
-#   output$SYD_privpubl_pie <- plotly::renderPlotly({
-#     SYD_privpubl_pie <- SYD_privpubl_pie_data()
-#     if(!is.null(SYD_privpubl_pie)){
-#       privpubl_pie(df = SYD_privpubl_pie,
-#                    pieVals = SYD_privpubl_pie$percent
-#       )
-#     }
-#     else {
-#       return(NULL)
-#     }
-#   })
-#   
-#   # SYD SSC Land Use piechart
-#   
-#   SYD_LU_pie_data <- reactive({
-#     if(!is.null(SYD_map_SSC$click)){
-#       filter_piechart(SYD_SSC_DATA,
-#                       uniqueID = SYD_SSC_DATA$SSC_CODE16,
-#                       clickID = SYD_map_SSC$click,
-#                       columnsToPlot = c('ArResPer', 'ArParkPer', 'ArInfrPer', 'ArOthPer', 
-#                                         'ArIndlPer', 'ArEduPer', 'ArCommPer', 'ArHospPer',
-#                                         'ArTransPer', 'ArWatPer', 'ArPrimPPer')
-#       )
-#     }
-#     else {
-#       return(NULL)
-#     }
-#   })
-#   
-#   output$SYD_LU_pie <- plotly::renderPlotly({
-#     SYD_LU_pie <- SYD_LU_pie_data()
-#     if(!is.null(SYD_LU_pie)){
-#       LU_pie(df = SYD_LU_pie,
-#              pieVals = SYD_LU_pie$percent
-#       )
-#     }
-#     else {
-#       return(NULL)
-#     }
-#   })
-#   
-#   # SYD SSC TREE Land Use piechart
-#   
-#   SYD_TrLU_pie_data <- reactive({
-#     if(!is.null(SYD_map_SSC$click)){
-#       filter_piechart(SYD_SSC_DATA,
-#                       uniqueID = SYD_SSC_DATA$SSC_CODE16,
-#                       clickID = SYD_map_SSC$click,
-#                       columnsToPlot = c('TrResPer', 'TrParkPer', 'TrInfrPer', 'TrOthPer',
-#                                         'TrIndlPer', 'TrEduPer', 'TrCommPer', 'TrHospPer',
-#                                         'TrTransPer', 'TrWatPer', 'TrPrimPPer')
-#       )
-#     }
-#     else {
-#       return(NULL)
-#     }
-#   })
-#   
-#   output$SYD_TrLU_pie <- plotly::renderPlotly({
-#     SYD_TrLU_pie <- SYD_TrLU_pie_data()
-#     if(!is.null(SYD_TrLU_pie)){
-#       TrLU_pie(df = SYD_TrLU_pie,
-#                pieVals = SYD_TrLU_pie$percent
-#       )
-#     }
-#     else {
-#       return(NULL)
-#     }
-#   })
-#   
-#   # SYD SSC filter scatter data
-#   
-#   SYD_SSC_scatter_data <- filter_scatter(
-#     SYD_SSC_DATA,
-#     columnsToPlot = c('SSC_CODE16','SSC_NAME16','PerAnyTree', 'GrDwDens', 'GrDenQuint', 'UrbDwDens', 'UrbDenQuin', 'ResDwDens', 'ResDenQuin'),
-#     uniqueID = SYD_SSC_DATA$SSC_CODE16
-#     
-#   )
-#   
-#   
-#   # Renders SYD SSC SCATTER GROSS
-#   output$SYD_SSC_gross_scatter <- plotly::renderPlotly({
-#     scatter_plot(df = SYD_SSC_scatter_data,
-#                  xVals = SYD_SSC_scatter_data$PerAnyTree,
-#                  yVals = SYD_SSC_scatter_data$yaxis_ran,
-#                  source = 'SYD_SSC_plot1',
-#                  structureName = SYD_SSC_scatter_data$SSC_NAME16,
-#                  plotTitle = "<b>Tree Canopy (%) & Gross Density Quintiles</b>",
-#                  tree = SYD_SSC_scatter_data$PerAnyTree,
-#                  densityQuintile = SYD_SSC_scatter_data$GrDenQuint,
-#                  density = SYD_SSC_scatter_data$GrDwDens)
-#   })
-#   
-#   observe({
-#     if (!is.null(SYD_map_SSC$click)){
-#       selected_quintile <- base::as.numeric(SYD_SSC_scatter_data[SYD_SSC_scatter_data[['SSC_CODE16']] == SYD_map_SSC$click, ]['GrDenQuint'])
-#       
-#       SYD_SSC_selected_quintile <- filter(SYD_SSC_scatter_data, GrDenQuint == selected_quintile)
-#       
-#       plotly::plotlyProxy("SYD_SSC_gross_scatter") %>%
-#         plotly::plotlyProxyInvoke("deleteTraces", list(1)) %>%
-#         plotly::plotlyProxyInvoke(
-#           "addTraces",
-#           list(
-#             x = SYD_SSC_selected_quintile$PerAnyTree,
-#             y = SYD_SSC_selected_quintile$yaxis_ran,
-#             type = 'line',
-#             mode = 'markers',
-#             marker = list(size = 10,
-#                           opacity = 0.8,
-#                           color = '#4292c6'),
-#             showlegend = FALSE,
-#             hoverinfo = 'text',
-#             text = quin_hover_text(
-#               structureName = SYD_SSC_selected_quintile$SSC_NAME16,
-#               tree = SYD_SSC_selected_quintile$PerAnyTree,
-#               densityQuintile = SYD_SSC_selected_quintile$GrDenQuint,
-#               density = SYD_SSC_selected_quintile$GrDwDens
-#             )
-#           )
-#         ) %>%
-#         plotly::plotlyProxyInvoke("relayout",
-#                                   list(shapes = list(
-#                                     scatter_quinline(
-#                                       df = SYD_SSC_scatter_data,
-#                                       uniqueID = "SSC_CODE16",
-#                                       clickID = SYD_map_SSC$click,
-#                                       groupID = "GrDenQuint",
-#                                       xVals = "PerAnyTree"
-#                                     ),
-#                                     scatter_mean(df = SYD_SSC_scatter_data,
-#                                                  xVals = "PerAnyTree")
-#                                   ),
-#                                   annotations = list(scatter_annotation(
-#                                     df = SYD_SSC_selected_quintile,
-#                                     uniqueID = "SSC_CODE16",
-#                                     clickID = SYD_map_SSC$click,
-#                                     xVals = "PerAnyTree",
-#                                     yVals = "yaxis_ran",
-#                                     structureName = "SSC_NAME16"
-#                                   ),
-#                                   scatter_quinline_label(
-#                                     df = SYD_SSC_selected_quintile,
-#                                     uniqueID = "SSC_CODE16",
-#                                     clickID = SYD_map_SSC$click,
-#                                     groupID = "GrDenQuint",
-#                                     xVals = "PerAnyTree"
-#                                   ),
-#                                   scatter_mean_label(df = SYD_SSC_scatter_data, xVals = "PerAnyTree"))))
-#     } 
-#     else{
-#       return(NULL)
-#     }
-#   })
-#   
-#   # Renders SYD SSC SCATTER URBAN
-#   output$SYD_SSC_urban_scatter <- plotly::renderPlotly({
-#     scatter_plot(df = SYD_SSC_scatter_data,
-#                  xVals = SYD_SSC_scatter_data$PerAnyTree,
-#                  yVals = SYD_SSC_scatter_data$yaxis_ran,
-#                  source = 'SYD_SSC_plot1',
-#                  structureName = SYD_SSC_scatter_data$SSC_NAME16,
-#                  plotTitle = "<b>Tree Canopy (%) & Urban Density Quintiles</b>",
-#                  tree = SYD_SSC_scatter_data$PerAnyTree,
-#                  densityQuintile = SYD_SSC_scatter_data$UrbDenQuin,
-#                  density = SYD_SSC_scatter_data$UrbDwDens)
-#   })
-#   
-#   observe({
-#     #if (!is.null(SYD_map_SSC$click)){
-#     selected_quintile <- base::as.numeric(SYD_SSC_scatter_data[SYD_SSC_scatter_data[['SSC_CODE16']] == SYD_map_SSC$click, ]['UrbDenQuin'])
-#     
-#     SYD_SSC_selected_quintile <- filter(SYD_SSC_scatter_data, UrbDenQuin == selected_quintile)
-#     
-#     plotly::plotlyProxy("SYD_SSC_urban_scatter") %>%
-#       plotly::plotlyProxyInvoke("deleteTraces", list(1)) %>%
-#       plotly::plotlyProxyInvoke(
-#         "addTraces",
-#         list(
-#           x = SYD_SSC_selected_quintile$PerAnyTree,
-#           y = SYD_SSC_selected_quintile$yaxis_ran,
-#           type = 'line',
-#           mode = 'markers',
-#           marker = list(size = 10,
-#                         opacity = 0.8,
-#                         color = '#4292c6'),
-#           showlegend = FALSE,
-#           hoverinfo = 'text',
-#           text = quin_hover_text(
-#             structureName = SYD_SSC_selected_quintile$SSC_NAME16,
-#             tree = SYD_SSC_selected_quintile$PerAnyTree,
-#             densityQuintile = SYD_SSC_selected_quintile$UrbDenQuin,
-#             density = SYD_SSC_selected_quintile$UrbDwDens
-#           )
-#         )
-#       ) %>%
-#       plotly::plotlyProxyInvoke("relayout",
-#                                 list(shapes = list(
-#                                   scatter_quinline(
-#                                     df = SYD_SSC_scatter_data,
-#                                     uniqueID = "SSC_CODE16",
-#                                     clickID = SYD_map_SSC$click,
-#                                     groupID = "UrbDenQuin",
-#                                     xVals = "PerAnyTree"
-#                                   ),
-#                                   scatter_mean(df = SYD_SSC_scatter_data,
-#                                                xVals = "PerAnyTree")
-#                                 ),
-#                                 annotations = list(scatter_annotation(
-#                                   df = SYD_SSC_selected_quintile,
-#                                   uniqueID = "SSC_CODE16",
-#                                   clickID = SYD_map_SSC$click,
-#                                   xVals = "PerAnyTree",
-#                                   yVals = "yaxis_ran",
-#                                   structureName = "SSC_NAME16"
-#                                 ),
-#                                 scatter_quinline_label(
-#                                   df = SYD_SSC_selected_quintile,
-#                                   uniqueID = "SSC_CODE16",
-#                                   clickID = SYD_map_SSC$click,
-#                                   groupID = "UrbDenQuin",
-#                                   xVals = "PerAnyTree"
-#                                 ),
-#                                 scatter_mean_label(df = SYD_SSC_scatter_data, xVals = "PerAnyTree"))))
-#     # } 
-#     # else{
-#     #   return(NULL)
-#     # }
-#   })
-#   
-#   # Renders SYD SSC SCATTER RES
-#   output$SYD_SSC_res_scatter <- plotly::renderPlotly({
-#     scatter_plot(df = SYD_SSC_scatter_data,
-#                  xVals = SYD_SSC_scatter_data$PerAnyTree,
-#                  yVals = SYD_SSC_scatter_data$yaxis_ran,
-#                  source = 'SYD_SSC_plot1',
-#                  structureName = SYD_SSC_scatter_data$SSC_NAME16,
-#                  plotTitle = "<b>Tree Canopy (%) & Residential Density Quintiles</b>",
-#                  tree = SYD_SSC_scatter_data$PerAnyTree,
-#                  densityQuintile = SYD_SSC_scatter_data$ResDenQuin,
-#                  density = SYD_SSC_scatter_data$ResDwDens)
-#   })
-#   
-#   observe({
-#     if (!is.null(SYD_map_SSC$click)){
-#       selected_quintile <- base::as.numeric(SYD_SSC_scatter_data[SYD_SSC_scatter_data[['SSC_CODE16']] == SYD_map_SSC$click, ]['ResDenQuin'])
-#       
-#       SYD_SSC_selected_quintile <- filter(SYD_SSC_scatter_data, ResDenQuin == selected_quintile)
-#       
-#       plotly::plotlyProxy("SYD_SSC_res_scatter") %>%
-#         plotly::plotlyProxyInvoke("deleteTraces", list(1)) %>%
-#         plotly::plotlyProxyInvoke(
-#           "addTraces",
-#           list(
-#             x = SYD_SSC_selected_quintile$PerAnyTree,
-#             y = SYD_SSC_selected_quintile$yaxis_ran,
-#             type = 'line',
-#             mode = 'markers',
-#             marker = list(size = 10,
-#                           opacity = 0.8,
-#                           color = '#4292c6'),
-#             showlegend = FALSE,
-#             hoverinfo = 'text',
-#             text = quin_hover_text(
-#               structureName = SYD_SSC_selected_quintile$SSC_NAME16,
-#               tree = SYD_SSC_selected_quintile$PerAnyTree,
-#               densityQuintile = SYD_SSC_selected_quintile$ResDenQuin,
-#               density = SYD_SSC_selected_quintile$ResDwDens
-#             )
-#           )
-#         ) %>%
-#         plotly::plotlyProxyInvoke("relayout",
-#                                   list(shapes = list(
-#                                     scatter_quinline(
-#                                       df = SYD_SSC_scatter_data,
-#                                       uniqueID = "SSC_CODE16",
-#                                       clickID = SYD_map_SSC$click,
-#                                       groupID = "ResDenQuin",
-#                                       xVals = "PerAnyTree"
-#                                     ),
-#                                     scatter_mean(df = SYD_SSC_scatter_data,
-#                                                  xVals = "PerAnyTree")
-#                                   ),
-#                                   annotations = list(scatter_annotation(
-#                                     df = SYD_SSC_selected_quintile,
-#                                     uniqueID = "SSC_CODE16",
-#                                     clickID = SYD_map_SSC$click,
-#                                     xVals = "PerAnyTree",
-#                                     yVals = "yaxis_ran",
-#                                     structureName = "SSC_NAME16"
-#                                   ),
-#                                   scatter_quinline_label(
-#                                     df = SYD_SSC_selected_quintile,
-#                                     uniqueID = "SSC_CODE16",
-#                                     clickID = SYD_map_SSC$click,
-#                                     groupID = "ResDenQuin",
-#                                     xVals = "PerAnyTree"
-#                                   ),
-#                                   scatter_mean_label(df = SYD_SSC_scatter_data, xVals = "PerAnyTree"))))
-#     } 
-#     else{
-#       return(NULL)
-#     }
-#   })  
-#   
+# PER Active SSC ----------------------------------------------------------
 
-# Map Click ---------------------------------------------------------------
-
-
-  # PER
-  
-  
   PER_map_SSC <- reactiveValues(click = vector(mode = 'numeric'))
-  
   PER_SSC <- reactiveValues(active = vector(mode = 'numeric'))
   
   # Records clicked SSC ID from map and updates SelectizeInput
@@ -1102,7 +268,6 @@ app_server <- function( input, output, session ) {
     }
   })
   
-
   #  Updates map when PER_SSC$active changes e.g. from drop down or map click
   observeEvent(PER_SSC$active, {
     leaflet::leafletProxy("PER_SSC_map") %>%
@@ -1117,110 +282,458 @@ app_server <- function( input, output, session ) {
               options = pathOptions(interactive = FALSE)
             )
   })
-  
-  
 
 
-  # MEL
-  
-  # MEL_map_SSC <- reactiveValues(click = vector(mode = 'numeric'))
-  # MEL_map_SSC$click <- 20305
-  # 
-  # observeEvent(input$MEL_SSC_dropdown, {
-  #   print(input$MEL_SSC_dropdown)
-  # })
-  # 
-  # observeEvent(input$MEL_SSC_map_shape_click, {
-  #   click <- isolate(input$MEL_SSC_map_shape_click)
-  #   isolate({
-  #     MEL_map_SSC$click = click$id
-  #   })
-  #   
-  #   print(MEL_map_SSC$click)
-  #   
-  #   if (!is.null(MEL_map_SSC$click)) {
-  #     leaflet::leafletProxy("MEL_SSC_map") %>%
-  #       leaflet::addPolylines(
-  #         data = (MEL_SSC_GEO[MEL_SSC_GEO$SSC_CODE16 ==  MEL_map_SSC$click,]),
-  #         fillOpacity = 0,
-  #         color = "red",
-  #         opacity = 1,
-  #         weight = 3.5,
-  #         stroke = T,
-  #         layerId = "GCC",
-  #         options = pathOptions(interactive = FALSE)
-  #       )
-  #   }
-  #   else {
-  #     leaflet::leafletProxy("MEL_SSC_map") %>%
-  #       leaflet::removeShape(map = 'MEL_SSC_map',
-  #                            layerId = "GCC") %>%
-  #       leaflet::addPolylines(
-  #         data = (MEL_SSC_GEO[MEL_SSC_GEO$SSC_CODE16 ==  MEL_map_SSC$click,]),
-  #         fillOpacity = 0,
-  #         color = "red",
-  #         opacity = 1,
-  #         weight = 3.5,
-  #         stroke = T,
-  #         layerId = "GCC",
-  #         options = pathOptions(interactive = FALSE)
-  #       )
-  #   }
-  # })
-  # 
-  # 
-  # MEL_active_SSC <- reactiveValues(
-  #   name = vector(mode = 'character')
-  # )
-  # 
-  # MEL_active_SSC$name <- 'Botanic Ridge'
-  # 
-  # observeEvent(MEL_map_SSC$click, {
-  #   MEL_active_SSC$name <- (MEL_SSC_DATA[MEL_SSC_DATA[['SSC_CODE16']] ==  MEL_map_SSC$click, ]['SSC_NAME16'])
-  # })
+# MEL SSC Map -------------------------------------------------------------
 
+  # Output MEL basemap
+  output$MEL_SSC_map <- renderLeaflet({
+    base_map()
+  })
   
-  # observeEvent(PER_map_SSC$click, {
-  #     leaflet::leafletProxy("PER_SSC_map") %>%
-  #       leaflet::addPolylines(
-  #         data = (PER_SSC_GEO[PER_SSC_GEO$SSC_CODE16 ==  PER_map_SSC$click, ]),
-  #         fillOpacity = 0,
-  #         color = "red",
-  #         opacity = 1,
-  #         weight = 3.5,
-  #         stroke = T,
-  #         layerId = "GCC",
-  #         options = pathOptions(interactive = FALSE)
-  #       )
-  # })
-  # 
-  # MEL
+  # Removes SYD SSC polygons when MEL tab is not visible
+  observeEvent(input$navbar,{
+    req(input$navbar!='Melbourne')
+    
+    leafletProxy("MEL_SSC_map", data = PER_SSC_GEO) %>%
+      clearShapes() %>%
+      clearControls()
+  })
   
-  # MEL_map_SSC <- reactiveValues(
-  #   click = vector(mode = 'numeric')
-  # )
-  # MEL_map_SSC$click <- 21629
-  # 
-  # observeEvent(input$MEL_SSC_map_shape_click,{
-  #   click <- isolate(input$MEL_SSC_map_shape_click)
-  #   isolate({MEL_map_SSC$click = click$id})
-  #   print(MEL_map_SSC$click)
-  # })
-  # 
-  # # SYD
-  # 
-  # SYD_map_SSC <- reactiveValues(
-  #   click = vector(mode = 'numeric')
-  # )
-  # SYD_map_SSC$click <- 13715
-  # 
-  # observeEvent(input$SYD_SSC_map_shape_click,{
-  #   click <- isolate(input$SYD_SSC_map_shape_click)
-  #   isolate({SYD_map_SSC$click = click$id})
-  #   print(SYD_map_SSC$click)
-  # })
-  # 
-  # 
+  
+  # Add MEL SSC polygons to MEL basemap when MEL tab is visible
+  observeEvent(input$navbar,{
+    req(input$navbar=='Melbourne')
+
+    map_add_polys(
+      df = MEL_SSC_GEO,
+      mapID = "MEL_SSC_map",
+      structureID = MEL_SSC_GEO$SSC_CODE16,
+      structureName = MEL_SSC_GEO$SSC_NAME16,
+      structureTree = MEL_SSC_GEO$PerAnyTree,
+      structureShrub = MEL_SSC_GEO$PerGrass,
+      structureGrass = MEL_SSC_GEO$PerShrub,
+      minZoom = 8,
+       maxZoom = 14,
+       lng1 = 144.39203,
+       lat1 = -37.31006,
+       lng2=145.80494,
+       lat2= -38.53502,
+       viewLng = 144.96592,
+       viewLat = -37.83361,
+       viewZoom = 10
+    )
+    
+    leaflet::leafletProxy("MEL_SSC_map") %>%
+      leaflet::addPolylines(
+        data = (MEL_SSC_GEO[MEL_SSC_GEO$SSC_CODE16 ==  MEL_SSC$active,]),
+        fillOpacity = 0,
+        color = "red",
+        opacity = 1,
+        weight = 3.5,
+        stroke = T,
+        layerId = "GCC",
+        options = pathOptions(interactive = FALSE)
+      )
+    
+  })
+
+# MEL SSC Plots -----------------------------------------------------------
+
+  # Output MEL bar charts
+  output$MEL_barcharts <- ggiraph::renderGirafe({
+    
+    # Default MEL bar chart data 
+    MEL_SSC_bar_data <- filter_SSC(
+      df = MEL_SSC_DATA,
+      uniqueID = MEL_SSC_DATA$SSC_CODE16,
+      clickID = MEL_SSC$active
+    )
+    
+    # Filters MEL_SSC_bar_data for the vegetation-type bar chart
+    MEL_vegtype_bar_data <- filter_barchart(
+      MEL_SSC_bar_data,
+      columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg'),
+      newNames = c('Grass', 'Shrub', 'Tree', 'Non-veg'),
+      order = c('Non-veg', 'Grass', 'Shrub', 'Tree')
+    )
+    
+    
+    # Filters MEL_SSC_pie_data for the land tenure bar chart
+    MEL_privpubl_bar_data <- filter_barchart(
+      MEL_SSC_bar_data,
+      columnsToPlot = c('TrPriv', 'TrPubl'),
+      newNames = c('Private', 'Public'),
+      order = c('Private', 'Public')
+    )
+    
+    # Filters MEL_SSC_bar_data for the land use bar chart
+    MEL_landuse_bar_data <- filter_barchart(MEL_SSC_bar_data,
+                                            columnsToPlot = c('ArResPer', 'ArParkPer', 'ArInfrPer', 'ArOthPer',
+                                                              'ArIndlPer', 'ArEduPer', 'ArCommPer', 'ArHospPer',
+                                                              'ArTransPer', 'ArWatPer', 'ArPrimPPer'),
+                                            newNames = c('Residential', 'Parkland', 'Infrastructure', 'Other', 
+                                                         'Industrial', 'Education', 'Commercial', 'Hospital', 
+                                                         'Transport', 'Water', 'Primary Production'),
+                                            order = c('Primary Production', 'Water','Transport', 
+                                                      'Hospital', 'Commercial','Education',
+                                                      'Industrial','Other', 'Infrastructure',
+                                                      'Parkland','Residential')
+    )
+    
+    # Filters MEL_SSC_bar_data for the TREE land use bar chart
+    MEL_treelanduse_bar_data <- filter_barchart(MEL_SSC_bar_data,
+                                                columnsToPlot = c('TrResPer', 'TrParkPer', 'TrInfrPer', 'TrOthPer',
+                                                                  'TrIndlPer', 'TrEduPer', 'TrCommPer', 'TrHospPer',
+                                                                  'TrTransPer', 'TrWatPer', 'TrPrimPPer'),
+                                                newNames = c('Residential', 'Parkland', 'Infrastructure', 'Other', 
+                                                             'Industrial', 'Education', 'Commercial', 'Hospital', 
+                                                             'Transport', 'Water', 'Primary Production'),
+                                                order = c('Primary Production', 'Water','Transport', 
+                                                          'Hospital', 'Commercial','Education',
+                                                          'Industrial','Other', 'Infrastructure',
+                                                          'Parkland','Residential')
+    )
+    
+    # Plots bar charts
+    landuseBarcharts(vegtypeData = MEL_vegtype_bar_data,
+                     vegtypeVals = MEL_vegtype_bar_data$percent,
+                     vegtypeGroups = MEL_vegtype_bar_data$type,
+                     tenureData = MEL_privpubl_bar_data, 
+                     tenureVals = MEL_privpubl_bar_data$percent, 
+                     tenureGroups = MEL_privpubl_bar_data$type,
+                     landuseData = MEL_landuse_bar_data,
+                     landuseVals = MEL_landuse_bar_data$percent,
+                     landuseGroups = MEL_landuse_bar_data$type,
+                     treelanduseData = MEL_treelanduse_bar_data,
+                     treelanduseVals = MEL_treelanduse_bar_data$percent,
+                     treelanduseGroups = MEL_treelanduse_bar_data$type)
+    #}
+  })
+  
+  # Output MEL density scatters
+  output$MEL_densityScatter <- ggiraph::renderGirafe({
+    
+    # MEL scatter chart data - MEL_SSC$active
+    MEL_SSC_scatter_data <- filter_scatter(
+      MEL_SSC_DATA,
+      columnsToPlot = c(
+        'SSC_CODE16',
+        'SSC_NAME16',
+        'PerAnyTree',
+        'GrDwDens',
+        'GrDenQuint',
+        'UrbDwDens',
+        'UrbDenQuin',
+        'ResDwDens',
+        'ResDenQuin'
+      ),
+      uniqueID = MEL_SSC$active
+    )
+    
+    # Filters MEL_SSC_scatter_data to just the selected suburb
+    MEL_SSC_scatter_selected_data <- scatter_selected_data(df = MEL_SSC_scatter_data,
+                                                           uniqueID = 'SSC_CODE16',
+                                                           activeID = MEL_SSC$active)
+    # Returns the selected suburb's quintile
+    MEL_SSC_scatter_selected_quint <- scatter_selected_quint(df = MEL_SSC_scatter_selected_data,
+                                                             quintileNum = 'GrDenQuint')
+    # Filters MEL_SSC_scatter_data the above quintile, minus the selected suburb
+    MEL_SSC_scatter_quint_data <- scatter_quint_data(df = MEL_SSC_scatter_data,
+                                                     quintileNum = 'GrDenQuint',
+                                                     selectedQuintile = MEL_SSC_scatter_selected_quint,
+                                                     uniqueID = 'SSC_CODE16',
+                                                     activeID = MEL_SSC$active)
+    # Filters MEL_SSC_scatter_data to remaining suburbs in other quintiles
+    MEL_SSC_scatter_remaining_data <- scatter_remaining_data(df = MEL_SSC_scatter_data,
+                                                             quintileNum = 'GrDenQuint',
+                                                             selectedQuintile = MEL_SSC_scatter_selected_quint)
+    # Plots scatter
+    densityScatter(
+      scatter_selected_data = MEL_SSC_scatter_selected_data,
+      scatter_quint_data = MEL_SSC_scatter_quint_data,
+      scatter_remaining_data = MEL_SSC_scatter_remaining_data,
+      uniqueID = 'SSC_CODE16',
+      yAxis = 'PerAnyTree',
+      xAxis = input$MEL_dens,
+      structureName = 'SSC_NAME16'
+    )
+  })
+  
+# MEL Active SSC ----------------------------------------------------------
+  MEL_map_SSC <- reactiveValues(click = vector(mode = 'numeric'))
+  MEL_SSC <- reactiveValues(active = vector(mode = 'numeric'))
+  
+  # Records clicked SSC ID from map and updates SelectizeInput
+  observeEvent(input$MEL_SSC_map_shape_click, {
+    click <- isolate(input$MEL_SSC_map_shape_click)
+    isolate({
+      MEL_map_SSC$click = click$id
+    })
+    updateSelectizeInput(inputId = 'MEL_SSC_dropdown',
+                         session = getDefaultReactiveDomain(),
+                         selected = (MEL_SSC_DATA[MEL_SSC_DATA[['SSC_CODE16']] ==  MEL_map_SSC$click, ]['SSC_NAME16']),
+                         choices = MEL_SSC_DATA$SSC_NAME1)
+  })
+  
+  # Records clicked SSC ID from suburb comparison plot and updates SelectizeInput
+  observeEvent(input$MEL_densityScatter_selected, {
+    updateSelectizeInput(inputId = 'MEL_SSC_dropdown',
+                         session = getDefaultReactiveDomain(),
+                         selected = (MEL_SSC_DATA[MEL_SSC_DATA[['SSC_CODE16']] ==  input$MEL_densityScatter_selected, ]['SSC_NAME16']),
+                         choices = MEL_SSC_DATA$SSC_NAME1)
+  })
+  
+  # Updates MEL_SSC$active from SelectizeInput
+  observeEvent(input$MEL_SSC_dropdown, {
+    if(input$MEL_SSC_dropdown==""){
+      return(NULL)
+    }
+    else{
+      MEL_SSC$active <- base::as.numeric((MEL_SSC_DATA[MEL_SSC_DATA[['SSC_NAME16']] ==  input$MEL_SSC_dropdown, ]['SSC_CODE16']))
+      print(MEL_SSC$active)
+    }
+  })
+  
+  #  Updates map when MEL_SSC$active changes e.g. from drop down or map click
+  observeEvent(MEL_SSC$active, {
+    leaflet::leafletProxy("MEL_SSC_map") %>%
+      leaflet::addPolylines(
+        data = (MEL_SSC_GEO[MEL_SSC_GEO$SSC_CODE16 ==  MEL_SSC$active,]),
+        fillOpacity = 0,
+        color = "red",
+        opacity = 1,
+        weight = 3.5,
+        stroke = T,
+        layerId = "GCC",
+        options = pathOptions(interactive = FALSE)
+      )
+  })
+  
+# SYD SSC Map -------------------------------------------------------------
+  
+  # Output SYD basemap
+  output$SYD_SSC_map <- renderLeaflet({
+    base_map()
+  })
+  
+  # Removes SYD SSC polygons when SYD tab is not visible
+  observeEvent(input$navbar,{
+    req(input$navbar!='Sydney')
+    
+    leafletProxy("SYD_SSC_map", data = PER_SSC_GEO) %>%
+      clearShapes() %>%
+      clearControls()
+  })
+  
+  # Add SYD SSC polygons to SYD basemap when SYD tab is visible
+  observeEvent(input$navbar,{
+    req(input$navbar=='Sydney')
+    
+    map_add_polys(
+      df = SYD_SSC_GEO,
+      mapID = "SYD_SSC_map",
+      structureID = SYD_SSC_GEO$SSC_CODE16,
+      structureName = SYD_SSC_GEO$SSC_NAME16,
+      structureTree = SYD_SSC_GEO$PerAnyTree,
+      structureShrub = SYD_SSC_GEO$PerGrass,
+      structureGrass = SYD_SSC_GEO$PerShrub,
+      minZoom = 8,
+      maxZoom = 14,
+      lng1 = 150.37754,
+      lat1 = -32.70499,
+      lng2= 151.90976,
+      lat2= -34.83072,
+      viewLng = 151.24835,
+      viewLat = -33.82814,
+      viewZoom = 10
+    )
+    
+    leaflet::leafletProxy("SYD_SSC_map") %>%
+      leaflet::addPolylines(
+        data = (SYD_SSC_GEO[SYD_SSC_GEO$SSC_CODE16 ==  SYD_SSC$active,]),
+        fillOpacity = 0,
+        color = "red",
+        opacity = 1,
+        weight = 3.5,
+        stroke = T,
+        layerId = "GCC",
+        options = pathOptions(interactive = FALSE)
+      )
+    
+  })
+  
+# SYD SSC Plots -----------------------------------------------------------
+  
+  # Output SYD bar charts
+  output$SYD_barcharts <- ggiraph::renderGirafe({
+    
+    # Default SYD bar chart data 
+    SYD_SSC_bar_data <- filter_SSC(
+      df = SYD_SSC_DATA,
+      uniqueID = SYD_SSC_DATA$SSC_CODE16,
+      clickID = SYD_SSC$active
+    )
+    
+    # Filters SYD_SSC_bar_data for the vegetation-type bar chart
+    SYD_vegtype_bar_data <- filter_barchart(
+      SYD_SSC_bar_data,
+      columnsToPlot = c('PerGrass', 'PerShrub', 'PerAnyTree', 'PerNonVeg'),
+      newNames = c('Grass', 'Shrub', 'Tree', 'Non-veg'),
+      order = c('Non-veg', 'Grass', 'Shrub', 'Tree')
+    )
+    
+    
+    # Filters SYD_SSC_pie_data for the land tenure bar chart
+    SYD_privpubl_bar_data <- filter_barchart(
+      SYD_SSC_bar_data,
+      columnsToPlot = c('TrPriv', 'TrPubl'),
+      newNames = c('Private', 'Public'),
+      order = c('Private', 'Public')
+    )
+    
+    # Filters SYD_SSC_bar_data for the land use bar chart
+    SYD_landuse_bar_data <- filter_barchart(SYD_SSC_bar_data,
+                                            columnsToPlot = c('ArResPer', 'ArParkPer', 'ArInfrPer', 'ArOthPer',
+                                                              'ArIndlPer', 'ArEduPer', 'ArCommPer', 'ArHospPer',
+                                                              'ArTransPer', 'ArWatPer', 'ArPrimPPer'),
+                                            newNames = c('Residential', 'Parkland', 'Infrastructure', 'Other', 
+                                                         'Industrial', 'Education', 'Commercial', 'Hospital', 
+                                                         'Transport', 'Water', 'Primary Production'),
+                                            order = c('Primary Production', 'Water','Transport', 
+                                                      'Hospital', 'Commercial','Education',
+                                                      'Industrial','Other', 'Infrastructure',
+                                                      'Parkland','Residential')
+    )
+    
+    # Filters SYD_SSC_bar_data for the TREE land use bar chart
+    SYD_treelanduse_bar_data <- filter_barchart(SYD_SSC_bar_data,
+                                                columnsToPlot = c('TrResPer', 'TrParkPer', 'TrInfrPer', 'TrOthPer',
+                                                                  'TrIndlPer', 'TrEduPer', 'TrCommPer', 'TrHospPer',
+                                                                  'TrTransPer', 'TrWatPer', 'TrPrimPPer'),
+                                                newNames = c('Residential', 'Parkland', 'Infrastructure', 'Other', 
+                                                             'Industrial', 'Education', 'Commercial', 'Hospital', 
+                                                             'Transport', 'Water', 'Primary Production'),
+                                                order = c('Primary Production', 'Water','Transport', 
+                                                          'Hospital', 'Commercial','Education',
+                                                          'Industrial','Other', 'Infrastructure',
+                                                          'Parkland','Residential')
+    )
+    
+    # Plots bar charts
+    landuseBarcharts(vegtypeData = SYD_vegtype_bar_data,
+                     vegtypeVals = SYD_vegtype_bar_data$percent,
+                     vegtypeGroups = SYD_vegtype_bar_data$type,
+                     tenureData = SYD_privpubl_bar_data, 
+                     tenureVals = SYD_privpubl_bar_data$percent, 
+                     tenureGroups = SYD_privpubl_bar_data$type,
+                     landuseData = SYD_landuse_bar_data,
+                     landuseVals = SYD_landuse_bar_data$percent,
+                     landuseGroups = SYD_landuse_bar_data$type,
+                     treelanduseData = SYD_treelanduse_bar_data,
+                     treelanduseVals = SYD_treelanduse_bar_data$percent,
+                     treelanduseGroups = SYD_treelanduse_bar_data$type)
+    #}
+  })
+  
+  # Output SYD density scatters
+  output$SYD_densityScatter <- ggiraph::renderGirafe({
+    
+    # SYD scatter chart data - SYD_SSC$active
+    SYD_SSC_scatter_data <- filter_scatter(
+      SYD_SSC_DATA,
+      columnsToPlot = c(
+        'SSC_CODE16',
+        'SSC_NAME16',
+        'PerAnyTree',
+        'GrDwDens',
+        'GrDenQuint',
+        'UrbDwDens',
+        'UrbDenQuin',
+        'ResDwDens',
+        'ResDenQuin'
+      ),
+      uniqueID = SYD_SSC$active
+    )
+    
+    # Filters SYD_SSC_scatter_data to just the selected suburb
+    SYD_SSC_scatter_selected_data <- scatter_selected_data(df = SYD_SSC_scatter_data,
+                                                           uniqueID = 'SSC_CODE16',
+                                                           activeID = SYD_SSC$active)
+    # Returns the selected suburb's quintile
+    SYD_SSC_scatter_selected_quint <- scatter_selected_quint(df = SYD_SSC_scatter_selected_data,
+                                                             quintileNum = 'GrDenQuint')
+    # Filters SYD_SSC_scatter_data the above quintile, minus the selected suburb
+    SYD_SSC_scatter_quint_data <- scatter_quint_data(df = SYD_SSC_scatter_data,
+                                                     quintileNum = 'GrDenQuint',
+                                                     selectedQuintile = SYD_SSC_scatter_selected_quint,
+                                                     uniqueID = 'SSC_CODE16',
+                                                     activeID = SYD_SSC$active)
+    # Filters SYD_SSC_scatter_data to remaining suburbs in other quintiles
+    SYD_SSC_scatter_remaining_data <- scatter_remaining_data(df = SYD_SSC_scatter_data,
+                                                             quintileNum = 'GrDenQuint',
+                                                             selectedQuintile = SYD_SSC_scatter_selected_quint)
+    # Plots scatter
+    densityScatter(
+      scatter_selected_data = SYD_SSC_scatter_selected_data,
+      scatter_quint_data = SYD_SSC_scatter_quint_data,
+      scatter_remaining_data = SYD_SSC_scatter_remaining_data,
+      uniqueID = 'SSC_CODE16',
+      yAxis = 'PerAnyTree',
+      xAxis = input$SYD_dens,
+      structureName = 'SSC_NAME16'
+    )
+  })
+  
+# SYD Active SSC ----------------------------------------------------------
+  SYD_map_SSC <- reactiveValues(click = vector(mode = 'numeric'))
+  SYD_SSC <- reactiveValues(active = vector(mode = 'numeric'))
+  
+  # Records clicked SSC ID from map and updates SelectizeInput
+  observeEvent(input$SYD_SSC_map_shape_click, {
+    click <- isolate(input$SYD_SSC_map_shape_click)
+    isolate({
+      SYD_map_SSC$click = click$id
+    })
+    updateSelectizeInput(inputId = 'SYD_SSC_dropdown',
+                         session = getDefaultReactiveDomain(),
+                         selected = (SYD_SSC_DATA[SYD_SSC_DATA[['SSC_CODE16']] ==  SYD_map_SSC$click, ]['SSC_NAME16']),
+                         choices = SYD_SSC_DATA$SSC_NAME1)
+  })
+  
+  # Records clicked SSC ID from suburb comparison plot and updates SelectizeInput
+  observeEvent(input$SYD_densityScatter_selected, {
+    updateSelectizeInput(inputId = 'SYD_SSC_dropdown',
+                         session = getDefaultReactiveDomain(),
+                         selected = (SYD_SSC_DATA[SYD_SSC_DATA[['SSC_CODE16']] ==  input$SYD_densityScatter_selected, ]['SSC_NAME16']),
+                         choices = SYD_SSC_DATA$SSC_NAME1)
+  })
+  
+  # Updates SYD_SSC$active from SelectizeInput
+  observeEvent(input$SYD_SSC_dropdown, {
+    if(input$SYD_SSC_dropdown==""){
+      return(NULL)
+    }
+    else{
+      SYD_SSC$active <- base::as.numeric((SYD_SSC_DATA[SYD_SSC_DATA[['SSC_NAME16']] ==  input$SYD_SSC_dropdown, ]['SSC_CODE16']))
+      print(SYD_SSC$active)
+    }
+  })
+  
+  #  Updates map when SYD_SSC$active changes e.g. from drop down or map click
+  observeEvent(SYD_SSC$active, {
+    leaflet::leafletProxy("SYD_SSC_map") %>%
+      leaflet::addPolylines(
+        data = (SYD_SSC_GEO[SYD_SSC_GEO$SSC_CODE16 ==  SYD_SSC$active,]),
+        fillOpacity = 0,
+        color = "red",
+        opacity = 1,
+        weight = 3.5,
+        stroke = T,
+        layerId = "GCC",
+        options = pathOptions(interactive = FALSE)
+      )
+  })
   
   
 }

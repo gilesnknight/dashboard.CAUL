@@ -21,7 +21,7 @@ app_ui <- function(request) {
     
     
     navbarPage(windowTitle = "CAUL Dashboard",
-               id = "tabs",
+               id = "navbar",
                title = span(
                  img(
                    src = "www/logo.png",
@@ -30,6 +30,10 @@ app_ui <- function(request) {
                    style = "position:relative; top:-7px; left:-6px"
                  )
                ),
+               tabPanel(title = "Home",
+                        icon = icon("home"),
+                        fillPage(titlePanel("Home"))
+                        ),
                
                tabPanel("Perth",
                         sidebarLayout(
@@ -45,8 +49,8 @@ app_ui <- function(request) {
                             #"Selected suburb: ",
                             selectizeInput(
                               'PER_SSC_dropdown', label = "Selected suburb: ", choices = PER_SSC_DATA$SSC_NAME16,
-                              selected = 'Perth (WA)',
-                              options = list(maxOptions = 5)
+                              selected = 'Perth (WA)'
+                             # options = list(maxOptions = 5)
                             ),
                             leaflet::leafletOutput(outputId = "PER_SSC_map", height = "calc(90vh - 80px)")
                             
@@ -62,7 +66,7 @@ app_ui <- function(request) {
                                                  
                                         ),
                                         tabPanel("Suburb comparison",
-                                                 selectInput("density", 
+                                                 selectInput("PER_dens", 
                                                              label = "Select density type:", 
                                                              c("Gross density" = "GrDwDens",
                                                                "Urban dwelling density" = "UrbDwDens",
@@ -83,22 +87,28 @@ app_ui <- function(request) {
                         ),
                tabPanel("Melbourne",
                         sidebarLayout(
+                          
                           sidebarPanel(
                             width = 5,
-                            leaflet::leafletOutput(outputId = "MEL_SSC_map", height = "calc(100vh - 80px)")
+                            selectizeInput(
+                              'MEL_SSC_dropdown', label = "Selected suburb: ", choices = MEL_SSC_DATA$SSC_NAME16,
+                              selected = 'Melbourne'
+                            ),
+                            leaflet::leafletOutput(outputId = "MEL_SSC_map", height = "calc(90vh - 80px)")
+                            
+                            
                           ),
                           
                           mainPanel(
                             width = 7,
                             tabsetPanel(type = "tabs",
-                                        id = 'MEL_tabs',
                                         tabPanel("Land-use",
                                                  ggiraph::girafeOutput("MEL_barcharts",
                                                                        height = 'calc(97vh - 90px)')
                                                  
                                         ),
                                         tabPanel("Suburb comparison",
-                                                 selectInput("density", 
+                                                 selectInput("MEL_dens", 
                                                              label = "Select density type:", 
                                                              c("Gross density" = "GrDwDens",
                                                                "Urban dwelling density" = "UrbDwDens",
@@ -119,43 +129,47 @@ app_ui <- function(request) {
                ),
                tabPanel("Sydney",
                         sidebarLayout(
+                          
                           sidebarPanel(
                             width = 5,
-                            leaflet::leafletOutput(outputId = "SYD_SSC_map", height = "calc(100vh - 80px)")
+                            selectizeInput(
+                              'SYD_SSC_dropdown', label = "Selected suburb: ", choices = SYD_SSC_DATA$SSC_NAME16,
+                              selected = 'Sydney'
+                            ),
+                            leaflet::leafletOutput(outputId = "SYD_SSC_map", height = "calc(90vh - 80px)")
+                            
+                            
                           ),
+                          
                           mainPanel(
                             width = 7,
                             tabsetPanel(type = "tabs",
-                                        tabPanel("Piecharts",
-                                                 fluidRow(
-                                                   column(6, plotly::plotlyOutput("SYD_vegtype_pie",
-                                                                                  height = 'calc(50vh - 57.5px)')),
-                                                   column(6, plotly::plotlyOutput("SYD_privpubl_pie",
-                                                                                  height = 'calc(50vh - 57.5px)'))
+                                        tabPanel("Land-use",
+                                                 ggiraph::girafeOutput("SYD_barcharts",
+                                                                       height = 'calc(97vh - 90px)')
+                                                 
+                                        ),
+                                        tabPanel("Suburb comparison",
+                                                 selectInput("SYD_dens", 
+                                                             label = "Select density type:", 
+                                                             c("Gross density" = "GrDwDens",
+                                                               "Urban dwelling density" = "UrbDwDens",
+                                                               "Residential dwelling density" = "ResDwDens")
                                                  ),
-                                                 fluidRow(
-                                                   column(6, plotly::plotlyOutput("SYD_LU_pie",
-                                                                                  height = 'calc(50vh - 57.5px)')),
-                                                   column(6, plotly::plotlyOutput("SYD_TrLU_pie",
-                                                                                  height = 'calc(50vh - 57.5px)'))
+                                                 ggiraph::girafeOutput("SYD_densityScatter",
+                                                                       height = 'calc(97vh - 90px)'
                                                  )
                                         ),
-                                        
-                                        tabPanel("Scatters",
-                                                 fluidRow(
-                                                   column(12, plotly::plotlyOutput("SYD_SSC_gross_scatter",
-                                                                                   height = 'calc(34vh - 46px)')),
-                                                   column(12, plotly::plotlyOutput("SYD_SSC_urban_scatter",
-                                                                                   height = 'calc(34vh - 46px)')),
-                                                   column(12, plotly::plotlyOutput("SYD_SSC_res_scatter",
-                                                                                   height = 'calc(34vh - 46px)'))
-                                                 )
-                                                 
+                                        tabPanel("City comparison"
                                         )
+                                        
+                                        
                             )
                           )
+                          
                         )
                ),
+               
                tabPanel(title = "About",
                         icon = icon("info-circle"),
                         fillPage(titlePanel("About the dashboard"))
