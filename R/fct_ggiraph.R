@@ -238,7 +238,7 @@ landuseBarcharts <- function(vegtypeData,
   ggiraph::girafe(code = print(vegtypeBar/tenureBar/landuseBar/treelanduseBar),
                   fonts = list(serif = "Helvetica"),
                   width_svg = 11, 
-                  height_svg =9,
+                  height_svg =8.5,
                   options = list(ggiraph::opts_tooltip(
                     css = "background-color:gray;
                                                               color:white;
@@ -364,7 +364,7 @@ densityScatter <- function(scatter_selected_data,
     code = print(plot),
     fonts = list(serif = "Helvetica"),
     width_svg = 11, 
-    height_svg =7.75,
+    height_svg =7,
     options = list(
       ggiraph::opts_selection(type = "single", only_shiny = FALSE),
       ggiraph::opts_toolbar(saveaspng = FALSE),

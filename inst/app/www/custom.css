@@ -115,3 +115,61 @@ background-color: transparent;
 .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar {
   z-index: 0 !important;
 }
+
+#PER_barcharts {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+#MEL_barcharts {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+#SYD_barcharts {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+.tab-content>.active[data-value="Suburb comparison"] {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+.tab-content>.active[data-value="City comparison"] {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+
+/* Progress bar */
+
+.shiny-progress .progress {
+  position: absolute;
+  width: 100%;
+  top: 0px;
+  height: 4px;
+  margin: 0px;
+}
+
+
+.shiny-progress .bar {
+  background-color: #e7e7e7;
+  .opacity = 0.8;
+  transition-duration: 250ms;
+}
+
+.shiny-progress .progress-text {
+
+  background-color: transparent;
+
+}
+
+.progress-text {
+  /* Copy the below to vertically center the progress bar text box in the shiny dashboard header */
+  /* !important is crucial here otherwise it gets overridden by the dreaded element.style */
+  top: 15px !important;
+  font-weight: bold;
+  color: #FFFFFF !important;
+}
