@@ -25,32 +25,22 @@ SYD_SSC_DATA <- base::readRDS("inst/extdata/SYD_SSC_DATA.rds")
 # Server ------------------------------------------------------------------
 
 app_server <- function(input, output, session) {
-  observeEvent(input$navbar, {
-    print(input$navbar)
+  shiny::observeEvent(input$navbar, {
+    base::print(input$navbar)
   })
 
-  # PER SSC Map -----------------------------------------------------------------
-
-  # Output PER basemap
-  output$PER_SSC_map <- renderLeaflet({
-    base_map()
-  })
-
-  # Removes SYD SSC polygons when SYD tab is not visible
-  observeEvent(input$navbar, {
-    shiny::req(input$navbar != "Perth")
-
-    leafletProxy("PER_SSC_map", data = PER_SSC_GEO) %>%
-      clearShapes() %>%
-      clearControls()
-  })
-
-
-  # Add PER SSC polygons to PER basemap when PER tab is visible
   observeEvent(input$navbar, {
     shiny::req(input$navbar == "Perth")
+    output$PER_SSC_map <- leaflet::renderLeaflet({
+      base_map()
+    })
+  })
 
-    withProgress(message = NA, style = "old", value = 0, {
+  # Add PER SSC polygons to PER basemap when PER tab is visible
+  shiny::observeEvent(input$navbar, {
+    shiny::req(input$navbar == "Perth")
+
+    shiny::withProgress(message = NA, style = "old", value = 0, {
       shiny::incProgress(1 / 3, detail = NA)
 
       map_add_polys(
@@ -74,7 +64,6 @@ app_server <- function(input, output, session) {
 
       shiny::incProgress(2 / 3, detail = NA)
 
-
       leaflet::leafletProxy("PER_SSC_map") %>%
         leaflet::addPolylines(
           data = (PER_SSC_GEO[PER_SSC_GEO$SSC_CODE16 == PER_SSC$active, ]),
@@ -84,7 +73,7 @@ app_server <- function(input, output, session) {
           weight = 3.5,
           stroke = T,
           layerId = "GCC",
-          options = pathOptions(interactive = FALSE)
+          options = leaflet::pathOptions(interactive = FALSE)
         )
 
       shiny::incProgress(3 / 3, detail = NA)
@@ -93,6 +82,19 @@ app_server <- function(input, output, session) {
 
   # PER SSC Plots -----------------------------------------------------------
 
+
+
+  dimensions <- reactiveValues()
+
+  observe({
+    dimensions$width <- function(){round(((input$width/1.5)*0.0104166), 2)}
+    dimensions$height <- function(){round((input$height*0.0104166), 2)}
+    dimensions$currentWidth  <- debounce(dimensions$width,1000)
+    dimensions$currentHeight  <- debounce(dimensions$height,1000)
+
+    dimensions$current <- c(dimensions$currentWidth(), dimensions$currentHeight())
+    print(paste0("W: ",dimensions$current[1], ", H: ", dimensions$current[2], "in"))
+  })
 
 
   # Output PER bar charts
@@ -108,33 +110,32 @@ app_server <- function(input, output, session) {
     # Filters PER_SSC_bar_data for the vegetation-type bar chart
     PER_vegtype_bar_data <- filter_barchart(
       PER_SSC_bar_data,
-      columnsToPlot = c("PerGrass", "PerShrub", "PerAnyTree", "PerNonVeg"),
-      newNames = c("Grass", "Shrub", "Tree", "Non-veg"),
-      order = c("Non-veg", "Grass", "Shrub", "Tree")
+      columnsToPlot = base::c("PerGrass", "PerShrub", "PerAnyTree", "PerNonVeg"),
+      newNames = base::c("Grass", "Shrub", "Tree", "Non-veg"),
+      order = base::c("Non-veg", "Grass", "Shrub", "Tree")
     )
-
 
     # Filters PER_SSC_pie_data for the land tenure bar chart
     PER_privpubl_bar_data <- filter_barchart(
       PER_SSC_bar_data,
-      columnsToPlot = c("TrPriv", "TrPubl"),
-      newNames = c("Private", "Public"),
-      order = c("Private", "Public")
+      columnsToPlot = base::c("TrPriv", "TrPubl"),
+      newNames = base::c("Private", "Public"),
+      order = base::c("Private", "Public")
     )
 
     # Filters PER_SSC_bar_data for the land use bar chart
     PER_landuse_bar_data <- filter_barchart(PER_SSC_bar_data,
-      columnsToPlot = c(
+      columnsToPlot = base::c(
         "ArResPer", "ArParkPer", "ArInfrPer", "ArOthPer",
         "ArIndlPer", "ArEduPer", "ArCommPer", "ArHospPer",
         "ArTransPer", "ArWatPer", "ArPrimPPer"
       ),
-      newNames = c(
+      newNames = base::c(
         "Residential", "Parkland", "Infrastructure", "Other",
         "Industrial", "Education", "Commercial", "Hospital",
         "Transport", "Water", "Primary Production"
       ),
-      order = c(
+      order = base::c(
         "Primary Production", "Water", "Transport",
         "Hospital", "Commercial", "Education",
         "Industrial", "Other", "Infrastructure",
@@ -144,17 +145,17 @@ app_server <- function(input, output, session) {
 
     # Filters PER_SSC_bar_data for the TREE land use bar chart
     PER_treelanduse_bar_data <- filter_barchart(PER_SSC_bar_data,
-      columnsToPlot = c(
+      columnsToPlot = base::c(
         "TrResPer", "TrParkPer", "TrInfrPer", "TrOthPer",
         "TrIndlPer", "TrEduPer", "TrCommPer", "TrHospPer",
         "TrTransPer", "TrWatPer", "TrPrimPPer"
       ),
-      newNames = c(
+      newNames = base::c(
         "Residential", "Parkland", "Infrastructure", "Other",
         "Industrial", "Education", "Commercial", "Hospital",
         "Transport", "Water", "Primary Production"
       ),
-      order = c(
+      order = base::c(
         "Primary Production", "Water", "Transport",
         "Hospital", "Commercial", "Education",
         "Industrial", "Other", "Infrastructure",
@@ -175,7 +176,9 @@ app_server <- function(input, output, session) {
       landuseGroups = PER_landuse_bar_data$type,
       treelanduseData = PER_treelanduse_bar_data,
       treelanduseVals = PER_treelanduse_bar_data$percent,
-      treelanduseGroups = PER_treelanduse_bar_data$type
+      treelanduseGroups = PER_treelanduse_bar_data$type,
+      plotWidth = dimensions$current[1],
+      plotHeight = dimensions$current[2]
     )
   })
 
@@ -185,7 +188,7 @@ app_server <- function(input, output, session) {
     # PER scatter chart data - PER_SSC$active
     PER_SSC_scatter_data <- filter_scatter(
       PER_SSC_DATA,
-      columnsToPlot = c(
+      columnsToPlot = base::c(
         "SSC_CODE16",
         "SSC_NAME16",
         "PerAnyTree",
@@ -232,22 +235,24 @@ app_server <- function(input, output, session) {
       uniqueID = "SSC_CODE16",
       yAxis = "PerAnyTree",
       xAxis = input$PER_dens,
-      structureName = "SSC_NAME16"
+      structureName = "SSC_NAME16",
+      plotWidth = dimensions$current[1],
+      plotHeight = dimensions$current[2]
     )
   })
 
   # PER Active SSC ----------------------------------------------------------
 
-  PER_map_SSC <- shiny::reactiveValues(click = vector(mode = "numeric"))
-  PER_SSC <- shiny::reactiveValues(active = vector(mode = "numeric"))
+  PER_map_SSC <- shiny::reactiveValues(click = base::vector(mode = "numeric"))
+  PER_SSC <- shiny::reactiveValues(active = base::vector(mode = "numeric"))
 
   # Records clicked SSC ID from map and updates SelectizeInput
-  observeEvent(input$PER_SSC_map_shape_click, {
+  shiny::observeEvent(input$PER_SSC_map_shape_click, {
     click <- shiny::isolate(input$PER_SSC_map_shape_click)
-    isolate({
+    shiny::isolate({
       PER_map_SSC$click <- click$id
     })
-    updateSelectizeInput(
+    shiny::updateSelectizeInput(
       inputId = "PER_SSC_dropdown",
       session = getDefaultReactiveDomain(),
       selected = (PER_SSC_DATA[PER_SSC_DATA[["SSC_CODE16"]] == PER_map_SSC$click, ]["SSC_NAME16"]),
@@ -256,28 +261,28 @@ app_server <- function(input, output, session) {
   })
 
   # Records clicked SSC ID from suburb comparison plot and updates SelectizeInput
-  observeEvent(input$PER_densityScatter_selected, {
-    updateSelectizeInput(
+  shiny::observeEvent(input$PER_densityScatter_selected, {
+    shiny::updateSelectizeInput(
       inputId = "PER_SSC_dropdown",
-      session = getDefaultReactiveDomain(),
+      session = shiny::getDefaultReactiveDomain(),
       selected = (PER_SSC_DATA[PER_SSC_DATA[["SSC_CODE16"]] == input$PER_densityScatter_selected, ]["SSC_NAME16"]),
       choices = PER_SSC_DATA$SSC_NAME1
     )
   })
 
   # Updates PER_SSC$active from SelectizeInput
-  observeEvent(input$PER_SSC_dropdown, {
+  shiny::observeEvent(input$PER_SSC_dropdown, {
     if (input$PER_SSC_dropdown == "") {
       return(NULL)
     }
     else {
       PER_SSC$active <- base::as.numeric((PER_SSC_DATA[PER_SSC_DATA[["SSC_NAME16"]] == input$PER_SSC_dropdown, ]["SSC_CODE16"]))
-      print(PER_SSC$active)
+      base::print(PER_SSC$active)
     }
   })
 
   #  Updates map when PER_SSC$active changes e.g. from drop down or map click
-  observeEvent(PER_SSC$active, {
+  shiny::observeEvent(PER_SSC$active, {
     leaflet::leafletProxy("PER_SSC_map") %>%
       leaflet::addPolylines(
         data = (PER_SSC_GEO[PER_SSC_GEO$SSC_CODE16 == PER_SSC$active, ]),
@@ -287,7 +292,7 @@ app_server <- function(input, output, session) {
         weight = 3.5,
         stroke = T,
         layerId = "GCC",
-        options = pathOptions(interactive = FALSE)
+        options = leaflet::pathOptions(interactive = FALSE)
       )
   })
 
@@ -295,26 +300,19 @@ app_server <- function(input, output, session) {
   # MEL SSC Map -------------------------------------------------------------
 
   # Output MEL basemap
-  output$MEL_SSC_map <- renderLeaflet({
-    base_map()
-  })
-
-  # Removes SYD SSC polygons when MEL tab is not visible
-  observeEvent(input$navbar, {
-    shiny::req(input$navbar != "Melbourne")
-
-    leafletProxy("MEL_SSC_map", data = PER_SSC_GEO) %>%
-      clearShapes() %>%
-      clearControls()
-  })
-
-
-  # Add MEL SSC polygons to MEL basemap when MEL tab is visible
   observeEvent(input$navbar, {
     shiny::req(input$navbar == "Melbourne")
 
-    withProgress(message = NA, style = "old", value = 0, {
+    output$MEL_SSC_map <- leaflet::renderLeaflet({
+      base_map()
+    })
+  })
 
+  # Add MEL SSC polygons to MEL basemap when MEL tab is visible
+  shiny::observeEvent(input$navbar, {
+    shiny::req(input$navbar == "Melbourne")
+
+    shiny::withProgress(message = NA, style = "old", value = 0, {
       shiny::incProgress(1 / 3, detail = NA)
 
       map_add_polys(
@@ -350,7 +348,6 @@ app_server <- function(input, output, session) {
           options = pathOptions(interactive = FALSE)
         )
       shiny::incProgress(3 / 3, detail = NA)
-
     })
   })
 
@@ -369,33 +366,32 @@ app_server <- function(input, output, session) {
     # Filters MEL_SSC_bar_data for the vegetation-type bar chart
     MEL_vegtype_bar_data <- filter_barchart(
       MEL_SSC_bar_data,
-      columnsToPlot = c("PerGrass", "PerShrub", "PerAnyTree", "PerNonVeg"),
-      newNames = c("Grass", "Shrub", "Tree", "Non-veg"),
-      order = c("Non-veg", "Grass", "Shrub", "Tree")
+      columnsToPlot = base::c("PerGrass", "PerShrub", "PerAnyTree", "PerNonVeg"),
+      newNames = base::c("Grass", "Shrub", "Tree", "Non-veg"),
+      order = base::c("Non-veg", "Grass", "Shrub", "Tree")
     )
-
 
     # Filters MEL_SSC_pie_data for the land tenure bar chart
     MEL_privpubl_bar_data <- filter_barchart(
       MEL_SSC_bar_data,
-      columnsToPlot = c("TrPriv", "TrPubl"),
-      newNames = c("Private", "Public"),
-      order = c("Private", "Public")
+      columnsToPlot = base::c("TrPriv", "TrPubl"),
+      newNames = base::c("Private", "Public"),
+      order = base::c("Private", "Public")
     )
 
     # Filters MEL_SSC_bar_data for the land use bar chart
     MEL_landuse_bar_data <- filter_barchart(MEL_SSC_bar_data,
-      columnsToPlot = c(
+      columnsToPlot = base::c(
         "ArResPer", "ArParkPer", "ArInfrPer", "ArOthPer",
         "ArIndlPer", "ArEduPer", "ArCommPer", "ArHospPer",
         "ArTransPer", "ArWatPer", "ArPrimPPer"
       ),
-      newNames = c(
+      newNames = base::c(
         "Residential", "Parkland", "Infrastructure", "Other",
         "Industrial", "Education", "Commercial", "Hospital",
         "Transport", "Water", "Primary Production"
       ),
-      order = c(
+      order = base::c(
         "Primary Production", "Water", "Transport",
         "Hospital", "Commercial", "Education",
         "Industrial", "Other", "Infrastructure",
@@ -405,17 +401,17 @@ app_server <- function(input, output, session) {
 
     # Filters MEL_SSC_bar_data for the TREE land use bar chart
     MEL_treelanduse_bar_data <- filter_barchart(MEL_SSC_bar_data,
-      columnsToPlot = c(
+      columnsToPlot = base::c(
         "TrResPer", "TrParkPer", "TrInfrPer", "TrOthPer",
         "TrIndlPer", "TrEduPer", "TrCommPer", "TrHospPer",
         "TrTransPer", "TrWatPer", "TrPrimPPer"
       ),
-      newNames = c(
+      newNames = base::c(
         "Residential", "Parkland", "Infrastructure", "Other",
         "Industrial", "Education", "Commercial", "Hospital",
         "Transport", "Water", "Primary Production"
       ),
-      order = c(
+      order = base::c(
         "Primary Production", "Water", "Transport",
         "Hospital", "Commercial", "Education",
         "Industrial", "Other", "Infrastructure",
@@ -438,7 +434,6 @@ app_server <- function(input, output, session) {
       treelanduseVals = MEL_treelanduse_bar_data$percent,
       treelanduseGroups = MEL_treelanduse_bar_data$type
     )
-    # }
   })
 
   # Output MEL density scatters
@@ -447,7 +442,7 @@ app_server <- function(input, output, session) {
     # MEL scatter chart data - MEL_SSC$active
     MEL_SSC_scatter_data <- filter_scatter(
       MEL_SSC_DATA,
-      columnsToPlot = c(
+      columnsToPlot = base::c(
         "SSC_CODE16",
         "SSC_NAME16",
         "PerAnyTree",
@@ -503,12 +498,12 @@ app_server <- function(input, output, session) {
   MEL_SSC <- shiny::reactiveValues(active = vector(mode = "numeric"))
 
   # Records clicked SSC ID from map and updates SelectizeInput
-  observeEvent(input$MEL_SSC_map_shape_click, {
+  shiny::observeEvent(input$MEL_SSC_map_shape_click, {
     click <- shiny::isolate(input$MEL_SSC_map_shape_click)
-    isolate({
+    shiny::isolate({
       MEL_map_SSC$click <- click$id
     })
-    updateSelectizeInput(
+    shiny::updateSelectizeInput(
       inputId = "MEL_SSC_dropdown",
       session = getDefaultReactiveDomain(),
       selected = (MEL_SSC_DATA[MEL_SSC_DATA[["SSC_CODE16"]] == MEL_map_SSC$click, ]["SSC_NAME16"]),
@@ -517,28 +512,28 @@ app_server <- function(input, output, session) {
   })
 
   # Records clicked SSC ID from suburb comparison plot and updates SelectizeInput
-  observeEvent(input$MEL_densityScatter_selected, {
-    updateSelectizeInput(
+  shiny::observeEvent(input$MEL_densityScatter_selected, {
+    shiny::updateSelectizeInput(
       inputId = "MEL_SSC_dropdown",
-      session = getDefaultReactiveDomain(),
+      session = shiny::getDefaultReactiveDomain(),
       selected = (MEL_SSC_DATA[MEL_SSC_DATA[["SSC_CODE16"]] == input$MEL_densityScatter_selected, ]["SSC_NAME16"]),
       choices = MEL_SSC_DATA$SSC_NAME1
     )
   })
 
   # Updates MEL_SSC$active from SelectizeInput
-  observeEvent(input$MEL_SSC_dropdown, {
+  shiny::observeEvent(input$MEL_SSC_dropdown, {
     if (input$MEL_SSC_dropdown == "") {
       return(NULL)
     }
     else {
       MEL_SSC$active <- base::as.numeric((MEL_SSC_DATA[MEL_SSC_DATA[["SSC_NAME16"]] == input$MEL_SSC_dropdown, ]["SSC_CODE16"]))
-      print(MEL_SSC$active)
+      base::print(MEL_SSC$active)
     }
   })
 
   #  Updates map when MEL_SSC$active changes e.g. from drop down or map click
-  observeEvent(MEL_SSC$active, {
+  shiny::observeEvent(MEL_SSC$active, {
     leaflet::leafletProxy("MEL_SSC_map") %>%
       leaflet::addPolylines(
         data = (MEL_SSC_GEO[MEL_SSC_GEO$SSC_CODE16 == MEL_SSC$active, ]),
@@ -548,66 +543,61 @@ app_server <- function(input, output, session) {
         weight = 3.5,
         stroke = T,
         layerId = "GCC",
-        options = pathOptions(interactive = FALSE)
+        options = leaflet::pathOptions(interactive = FALSE)
       )
   })
 
   # SYD SSC Map -------------------------------------------------------------
 
   # Output SYD basemap
-  output$SYD_SSC_map <- renderLeaflet({
-    base_map()
-  })
-
-  # Removes SYD SSC polygons when SYD tab is not visible
-  observeEvent(input$navbar, {
-    shiny::req(input$navbar != "Sydney")
-
-    leafletProxy("SYD_SSC_map", data = PER_SSC_GEO) %>%
-      clearShapes() %>%
-      clearControls()
-  })
-
-  # Add SYD SSC polygons to SYD basemap when SYD tab is visible
   observeEvent(input$navbar, {
     shiny::req(input$navbar == "Sydney")
 
-    withProgress(message = NA, style = "old", value = 0, {
+    output$SYD_SSC_map <- leaflet::renderLeaflet({
+      base_map()
+    })
+  })
+
+  # Add SYD SSC polygons to SYD basemap when SYD tab is visible
+  shiny::observeEvent(input$navbar, {
+    shiny::req(input$navbar == "Sydney")
+
+    shiny::withProgress(message = NA, style = "old", value = 0, {
       shiny::incProgress(1 / 3, detail = NA)
 
-    map_add_polys(
-      df = SYD_SSC_GEO,
-      mapID = "SYD_SSC_map",
-      structureID = SYD_SSC_GEO$SSC_CODE16,
-      structureName = SYD_SSC_GEO$SSC_NAME16,
-      structureTree = SYD_SSC_GEO$PerAnyTree,
-      structureShrub = SYD_SSC_GEO$PerGrass,
-      structureGrass = SYD_SSC_GEO$PerShrub,
-      minZoom = 8,
-      maxZoom = 14,
-      lng1 = 150.37754,
-      lat1 = -32.70499,
-      lng2 = 151.90976,
-      lat2 = -34.83072,
-      viewLng = 151.24835,
-      viewLat = -33.82814,
-      viewZoom = 10
-    )
-
-    shiny::incProgress(2 / 3, detail = NA)
-
-    leaflet::leafletProxy("SYD_SSC_map") %>%
-      leaflet::addPolylines(
-        data = (SYD_SSC_GEO[SYD_SSC_GEO$SSC_CODE16 == SYD_SSC$active, ]),
-        fillOpacity = 0,
-        color = "red",
-        opacity = 1,
-        weight = 3.5,
-        stroke = T,
-        layerId = "GCC",
-        options = pathOptions(interactive = FALSE)
+      map_add_polys(
+        df = SYD_SSC_GEO,
+        mapID = "SYD_SSC_map",
+        structureID = SYD_SSC_GEO$SSC_CODE16,
+        structureName = SYD_SSC_GEO$SSC_NAME16,
+        structureTree = SYD_SSC_GEO$PerAnyTree,
+        structureShrub = SYD_SSC_GEO$PerGrass,
+        structureGrass = SYD_SSC_GEO$PerShrub,
+        minZoom = 8,
+        maxZoom = 14,
+        lng1 = 150.37754,
+        lat1 = -32.70499,
+        lng2 = 151.90976,
+        lat2 = -34.83072,
+        viewLng = 151.24835,
+        viewLat = -33.82814,
+        viewZoom = 10
       )
-    shiny::incProgress(3 / 3, detail = NA)
+
+      shiny::incProgress(2 / 3, detail = NA)
+
+      leaflet::leafletProxy("SYD_SSC_map") %>%
+        leaflet::addPolylines(
+          data = (SYD_SSC_GEO[SYD_SSC_GEO$SSC_CODE16 == SYD_SSC$active, ]),
+          fillOpacity = 0,
+          color = "red",
+          opacity = 1,
+          weight = 3.5,
+          stroke = T,
+          layerId = "GCC",
+          options = leaflet::pathOptions(interactive = FALSE)
+        )
+      shiny::incProgress(3 / 3, detail = NA)
     })
   })
 
@@ -626,33 +616,32 @@ app_server <- function(input, output, session) {
     # Filters SYD_SSC_bar_data for the vegetation-type bar chart
     SYD_vegtype_bar_data <- filter_barchart(
       SYD_SSC_bar_data,
-      columnsToPlot = c("PerGrass", "PerShrub", "PerAnyTree", "PerNonVeg"),
-      newNames = c("Grass", "Shrub", "Tree", "Non-veg"),
-      order = c("Non-veg", "Grass", "Shrub", "Tree")
+      columnsToPlot = base::c("PerGrass", "PerShrub", "PerAnyTree", "PerNonVeg"),
+      newNames = base::c("Grass", "Shrub", "Tree", "Non-veg"),
+      order = base::c("Non-veg", "Grass", "Shrub", "Tree")
     )
-
 
     # Filters SYD_SSC_pie_data for the land tenure bar chart
     SYD_privpubl_bar_data <- filter_barchart(
       SYD_SSC_bar_data,
-      columnsToPlot = c("TrPriv", "TrPubl"),
-      newNames = c("Private", "Public"),
-      order = c("Private", "Public")
+      columnsToPlot = base::c("TrPriv", "TrPubl"),
+      newNames = base::c("Private", "Public"),
+      order = base::c("Private", "Public")
     )
 
     # Filters SYD_SSC_bar_data for the land use bar chart
     SYD_landuse_bar_data <- filter_barchart(SYD_SSC_bar_data,
-      columnsToPlot = c(
+      columnsToPlot = base::c(
         "ArResPer", "ArParkPer", "ArInfrPer", "ArOthPer",
         "ArIndlPer", "ArEduPer", "ArCommPer", "ArHospPer",
         "ArTransPer", "ArWatPer", "ArPrimPPer"
       ),
-      newNames = c(
+      newNames = base::c(
         "Residential", "Parkland", "Infrastructure", "Other",
         "Industrial", "Education", "Commercial", "Hospital",
         "Transport", "Water", "Primary Production"
       ),
-      order = c(
+      order = base::c(
         "Primary Production", "Water", "Transport",
         "Hospital", "Commercial", "Education",
         "Industrial", "Other", "Infrastructure",
@@ -662,17 +651,17 @@ app_server <- function(input, output, session) {
 
     # Filters SYD_SSC_bar_data for the TREE land use bar chart
     SYD_treelanduse_bar_data <- filter_barchart(SYD_SSC_bar_data,
-      columnsToPlot = c(
+      columnsToPlot = base::c(
         "TrResPer", "TrParkPer", "TrInfrPer", "TrOthPer",
         "TrIndlPer", "TrEduPer", "TrCommPer", "TrHospPer",
         "TrTransPer", "TrWatPer", "TrPrimPPer"
       ),
-      newNames = c(
+      newNames = base::c(
         "Residential", "Parkland", "Infrastructure", "Other",
         "Industrial", "Education", "Commercial", "Hospital",
         "Transport", "Water", "Primary Production"
       ),
-      order = c(
+      order = base::c(
         "Primary Production", "Water", "Transport",
         "Hospital", "Commercial", "Education",
         "Industrial", "Other", "Infrastructure",
@@ -695,7 +684,6 @@ app_server <- function(input, output, session) {
       treelanduseVals = SYD_treelanduse_bar_data$percent,
       treelanduseGroups = SYD_treelanduse_bar_data$type
     )
-    # }
   })
 
   # Output SYD density scatters
@@ -704,7 +692,7 @@ app_server <- function(input, output, session) {
     # SYD scatter chart data - SYD_SSC$active
     SYD_SSC_scatter_data <- filter_scatter(
       SYD_SSC_DATA,
-      columnsToPlot = c(
+      columnsToPlot = base::c(
         "SSC_CODE16",
         "SSC_NAME16",
         "PerAnyTree",
@@ -756,16 +744,16 @@ app_server <- function(input, output, session) {
   })
 
   # SYD Active SSC ----------------------------------------------------------
-  SYD_map_SSC <- shiny::reactiveValues(click = vector(mode = "numeric"))
-  SYD_SSC <- shiny::reactiveValues(active = vector(mode = "numeric"))
+  SYD_map_SSC <- shiny::reactiveValues(click = base::vector(mode = "numeric"))
+  SYD_SSC <- shiny::reactiveValues(active = base::vector(mode = "numeric"))
 
   # Records clicked SSC ID from map and updates SelectizeInput
-  observeEvent(input$SYD_SSC_map_shape_click, {
+  shiny::observeEvent(input$SYD_SSC_map_shape_click, {
     click <- shiny::isolate(input$SYD_SSC_map_shape_click)
-    isolate({
+    shiny::isolate({
       SYD_map_SSC$click <- click$id
     })
-    updateSelectizeInput(
+    shiny::updateSelectizeInput(
       inputId = "SYD_SSC_dropdown",
       session = getDefaultReactiveDomain(),
       selected = (SYD_SSC_DATA[SYD_SSC_DATA[["SSC_CODE16"]] == SYD_map_SSC$click, ]["SSC_NAME16"]),
@@ -774,28 +762,28 @@ app_server <- function(input, output, session) {
   })
 
   # Records clicked SSC ID from suburb comparison plot and updates SelectizeInput
-  observeEvent(input$SYD_densityScatter_selected, {
-    updateSelectizeInput(
+  shiny::observeEvent(input$SYD_densityScatter_selected, {
+    shiny::updateSelectizeInput(
       inputId = "SYD_SSC_dropdown",
-      session = getDefaultReactiveDomain(),
+      session = shiny::getDefaultReactiveDomain(),
       selected = (SYD_SSC_DATA[SYD_SSC_DATA[["SSC_CODE16"]] == input$SYD_densityScatter_selected, ]["SSC_NAME16"]),
       choices = SYD_SSC_DATA$SSC_NAME1
     )
   })
 
   # Updates SYD_SSC$active from SelectizeInput
-  observeEvent(input$SYD_SSC_dropdown, {
+  shiny::observeEvent(input$SYD_SSC_dropdown, {
     if (input$SYD_SSC_dropdown == "") {
       return(NULL)
     }
     else {
       SYD_SSC$active <- base::as.numeric((SYD_SSC_DATA[SYD_SSC_DATA[["SSC_NAME16"]] == input$SYD_SSC_dropdown, ]["SSC_CODE16"]))
-      print(SYD_SSC$active)
+      base::print(SYD_SSC$active)
     }
   })
 
   #  Updates map when SYD_SSC$active changes e.g. from drop down or map click
-  observeEvent(SYD_SSC$active, {
+  shiny::observeEvent(SYD_SSC$active, {
     leaflet::leafletProxy("SYD_SSC_map") %>%
       leaflet::addPolylines(
         data = (SYD_SSC_GEO[SYD_SSC_GEO$SSC_CODE16 == SYD_SSC$active, ]),

@@ -9,160 +9,184 @@ app_ui <- function(request) {
     shiny::tabPanel(..., class = "p-3 border border-top-0 rounded-bottom")
   }
 
-  tagList(
+  shiny::tagList(
     golem_add_external_resources(),
-    navbarPage(
+    tags$head(
+        tags$script('
+                        var width = 0;
+                        $(document).on("shiny:connected", function(e) {
+                          width = window.innerWidth;
+                          Shiny.onInputChange("width", width);
+                        });
+                        $(window).resize(function(e) {
+                          width = window.innerWidth;
+                          Shiny.onInputChange("width", width);
+                        });
+                        '),
+        tags$script('
+                        var height = 0;
+                        $(document).on("shiny:connected", function(e) {
+                          height = window.innerHeight;
+                          Shiny.onInputChange("height", height);
+                        });
+                        $(window).resize(function(e) {
+                          height = window.innerHeight;
+                          Shiny.onInputChange("height", height);
+                        });
+                        ')
+      ),
+    shiny::navbarPage(
       windowTitle = "CAUL Dashboard",
       id = "navbar",
-      title = span(
-        img(
+      title = shiny::span(
+        shiny::img(
           src = "www/logo.png",
           width = 100,
           height = 40,
           style = "position:relative; top:-7px; left:-6px"
         )
       ),
-      tabPanel(
+      shiny::tabPanel(
         title = "Home",
-        icon = icon("home"),
-        fillPage(titlePanel("Home"))
+        icon = shiny::icon("home"),
+        shiny::fillPage(shiny::titlePanel("Home"))
       ),
-      tabPanel(
+      shiny::tabPanel(
         "Perth",
-        sidebarLayout(
-          sidebarPanel(
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
             width = 5,
-            selectizeInput(
+            shiny::selectizeInput(
               "PER_SSC_dropdown",
               label = "Selected suburb: ", choices = PER_SSC_DATA$SSC_NAME16,
               selected = "Perth (WA)"
             ),
             leaflet::leafletOutput(
-              outputId = "PER_SSC_map", 
-              height = "calc(84.3vh)"
-              )
+              outputId = "PER_SSC_map",
+              height = "calc(50vh)"
+            )
           ),
-          mainPanel(
+          shiny::mainPanel(
             width = 7,
-            tabsetPanel(
+            shiny::tabsetPanel(
               type = "tabs",
-              tabPanel(
+              shiny::tabPanel(
                 "Land-use",
                 ggiraph::girafeOutput("PER_barcharts",
-                  height = "calc(97vh - 90px)"
+                  height = "calc(82vh - 5px)"
                 )
               ),
-              tabPanel(
+              shiny::tabPanel(
                 "Suburb comparison",
-                selectInput("PER_dens",
+                shiny::selectInput("PER_dens",
                   label = "Select density type:",
-                  c(
+                  base::c(
                     "Gross density" = "GrDwDens",
                     "Urban dwelling density" = "UrbDwDens",
                     "Residential dwelling density" = "ResDwDens"
                   )
                 ),
                 ggiraph::girafeOutput("PER_densityScatter",
-                  height = "calc(80.1vh)"
+                  height = "calc(80.1vh - 20px)"
                 )
               ),
-              tabPanel("City comparison")
+              shiny::tabPanel("City comparison")
             )
           )
         )
       ),
-      tabPanel(
+      shiny::tabPanel(
         "Melbourne",
-        sidebarLayout(
-          sidebarPanel(
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
             width = 5,
-            selectizeInput(
+            shiny::selectizeInput(
               "MEL_SSC_dropdown",
               label = "Selected suburb: ", choices = MEL_SSC_DATA$SSC_NAME16,
               selected = "Melbourne"
             ),
             leaflet::leafletOutput(
-              outputId = "MEL_SSC_map", 
-              height = "calc(84.3vh)"
-              )
+              outputId = "MEL_SSC_map",
+              height = "calc(70vh - 10px)"
+            )
           ),
-          mainPanel(
+          shiny::mainPanel(
             width = 7,
-            tabsetPanel(
+            shiny::tabsetPanel(
               type = "tabs",
-              tabPanel(
+              shiny::tabPanel(
                 "Land-use",
                 ggiraph::girafeOutput("MEL_barcharts",
                   height = "calc(97vh - 90px)"
                 )
               ),
-              tabPanel(
+              shiny::tabPanel(
                 "Suburb comparison",
-                selectInput("MEL_dens",
+                shiny::selectInput("MEL_dens",
                   label = "Select density type:",
-                  c(
+                  base::c(
                     "Gross density" = "GrDwDens",
                     "Urban dwelling density" = "UrbDwDens",
                     "Residential dwelling density" = "ResDwDens"
                   )
                 ),
                 ggiraph::girafeOutput("MEL_densityScatter",
-                  height = "calc(80.1vh)"
+                  height = "calc(80.1vh - 20px)"
                 )
               ),
-              tabPanel("City comparison")
+              shiny::tabPanel("City comparison")
             )
           )
         )
       ),
-      tabPanel(
+      shiny::tabPanel(
         "Sydney",
-        sidebarLayout(
-          sidebarPanel(
+        shiny::sidebarLayout(
+          shiny::sidebarPanel(
             width = 5,
-            selectizeInput(
+            shiny::selectizeInput(
               "SYD_SSC_dropdown",
               label = "Selected suburb: ", choices = SYD_SSC_DATA$SSC_NAME16,
               selected = "Sydney"
             ),
             leaflet::leafletOutput(
-              outputId = "SYD_SSC_map", 
-              height = "calc(84.3vh)"
-              )
+              outputId = "SYD_SSC_map",
+              height = "calc(70vh - 10px)"
+            )
           ),
-          mainPanel(
+          shiny::mainPanel(
             width = 7,
-            tabsetPanel(
+            shiny::tabsetPanel(
               type = "tabs",
-              tabPanel(
+              shiny::tabPanel(
                 "Land-use",
                 ggiraph::girafeOutput("SYD_barcharts",
                   height = "calc(97vh - 90px)"
                 )
               ),
-              tabPanel(
+              shiny::tabPanel(
                 "Suburb comparison",
-                selectInput("SYD_dens",
+                shiny::selectInput("SYD_dens",
                   label = "Select density type:",
-                  c(
+                  base::c(
                     "Gross density" = "GrDwDens",
                     "Urban dwelling density" = "UrbDwDens",
                     "Residential dwelling density" = "ResDwDens"
                   )
                 ),
                 ggiraph::girafeOutput("SYD_densityScatter",
-                  height = "calc(80.1vh)"
+                  height = "calc(80.1vh - 20px)"
                 )
               ),
-              tabPanel("City comparison")
+              shiny::tabPanel("City comparison")
             )
           )
         )
       ),
-      tabPanel(
+      shiny::tabPanel(
         title = "About",
         icon = icon("info-circle"),
-        fillPage(titlePanel("About the dashboard"))
+        shiny::fillPage(shiny::titlePanel("About the dashboard"))
       )
     )
   )

@@ -1,5 +1,10 @@
 
 
+dynamicSize  <- function(dimension){
+ dynamicDimension  <-  dimension  
+}
+
+
 landusePiecharts <- function(vegtypeData,
                              vegtypeVals, 
                              vegtypeGroups, 
@@ -86,7 +91,9 @@ landuseBarcharts <- function(vegtypeData,
                              landuseGroups,
                              treelanduseData,
                              treelanduseVals,
-                             treelanduseGroups){
+                             treelanduseGroups,
+                             plotWidth,
+                             plotHeight){
   
   # Vegetation type bar chart
   vegtypeBar <- ggplot2::ggplot(vegtypeData,
@@ -127,8 +134,7 @@ landuseBarcharts <- function(vegtypeData,
   # Land tenure bar chart
   tenureBar <- ggplot2::ggplot(tenureData,
                                ggplot2::aes(1, tenureVals, group = tenureGroups)) +
-    ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = paste0(tenureGroups, ": ", round(tenureVals *
-                                                                                    100, 1), "%"), fill = tenureGroups),
+    ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = base::paste0(round(tenureVals * 100, 1), "% of tree is on ", tenureGroups, " land" ), fill = tenureGroups),
                                   stat = "identity",
                                   width = 1) +
     ggplot2::scale_fill_manual(
@@ -237,8 +243,8 @@ landuseBarcharts <- function(vegtypeData,
   # Pass into ggiraph for interactive features
   ggiraph::girafe(code = print(vegtypeBar/tenureBar/landuseBar/treelanduseBar),
                   fonts = list(serif = "Helvetica"),
-                  width_svg = 11, 
-                  height_svg =8.5,
+                  width_svg = plotWidth, 
+                  height_svg = plotHeight,
                   options = list(ggiraph::opts_tooltip(
                     css = "background-color:gray;
                                                               color:white;
@@ -284,7 +290,9 @@ densityScatter <- function(scatter_selected_data,
                            structureName,
                            uniqueID,
                            xAxis,
-                           yAxis){
+                           yAxis, 
+                           plotWidth,
+                           plotHeight){
   plot <- ggplot2::ggplot() +
     ggiraph::geom_point_interactive(
       ggplot2::aes(
@@ -363,8 +371,8 @@ densityScatter <- function(scatter_selected_data,
   girafe <- ggiraph::girafe(
     code = print(plot),
     fonts = list(serif = "Helvetica"),
-    width_svg = 11, 
-    height_svg =7,
+    width_svg = plotWidth, 
+    height_svg = plotHeight,
     options = list(
       ggiraph::opts_selection(type = "single", only_shiny = FALSE),
       ggiraph::opts_toolbar(saveaspng = FALSE),
@@ -389,4 +397,3 @@ densityScatter <- function(scatter_selected_data,
   girafe
   
 }
-
