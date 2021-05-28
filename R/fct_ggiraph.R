@@ -4,6 +4,23 @@ dynamicSize  <- function(dimension){
  dynamicDimension  <-  dimension  
 }
 
+# 
+titleWrapper <- function(x, ...) 
+{
+ base::paste(base::strwrap(x, ...), collapse = "\n")
+}
+
+titleWidth <- function(width){
+  if (width >= 5.99) {
+    return(100)
+  } else if (width >= 5.57 & width < 5.99) {
+    return(80)
+  } else if (width > 3 & width < 5.57) {
+    return(70)
+  }
+}
+
+
 
 landusePiecharts <- function(vegtypeData,
                              vegtypeVals, 
@@ -79,7 +96,7 @@ landusePiecharts <- function(vegtypeData,
 }
 
 
-# Creates 4 barcharts with interactive features
+# Outputs ggiraph object of four landuse vertical barcharts
 landuseBarcharts <- function(vegtypeData,
                              vegtypeVals,
                              vegtypeGroups, 
@@ -93,7 +110,8 @@ landuseBarcharts <- function(vegtypeData,
                              treelanduseVals,
                              treelanduseGroups,
                              plotWidth,
-                             plotHeight){
+                             plotHeight,
+                             SSCname){
   
   # Vegetation type bar chart
   vegtypeBar <- ggplot2::ggplot(vegtypeData,
@@ -111,7 +129,13 @@ landuseBarcharts <- function(vegtypeData,
                                 limits=c(0, 1),
                                 expand = c(0, 0)) +
     ggplot2::scale_x_continuous(expand = c(0, 0)) +
-    ggplot2::ggtitle("Vegetation type") +
+    ggplot2::ggtitle("Vegetation cover",
+    subtitle = base::paste0(
+      SSCname,
+      " has a tree canopy cover of ", 
+      scales::percent(vegtypeVals[3], accuracy = 0.1),
+       ":")
+       ) +
     ggplot2::theme_classic() +
     ggplot2::theme(
       axis.title.x = ggplot2::element_blank(),
@@ -122,19 +146,24 @@ landuseBarcharts <- function(vegtypeData,
       axis.text.y = ggplot2::element_blank(),
       axis.ticks.y = ggplot2::element_blank(),
       axis.line.y = ggplot2::element_blank(),
+      plot.margin = ggplot2::margin(0.75, 0, 0, 0, "cm"),
       legend.title = ggplot2::element_blank(),
       legend.text = ggplot2::element_text(size = 8),
       legend.key.size = ggplot2::unit(0.4, "cm"),
-      legend.margin = ggplot2::margin(0, 0, 0, 580),
+      legend.margin = ggplot2::margin(0, 0, 0, 0),
+      #legend.margin = ggplot2::margin(0, 0, 0, 580),
+      # plot.title = ggplot2::element_text(face = 'bold',
+      #                                    vjust = -5.5),
       plot.title = ggplot2::element_text(face = 'bold',
-                                         vjust = -5.5),
-      legend.position = "top"
+                                         vjust = 0),
+      #legend.position = "top"
+      legend.position = "none"
     )
   
   # Land tenure bar chart
   tenureBar <- ggplot2::ggplot(tenureData,
                                ggplot2::aes(1, tenureVals, group = tenureGroups)) +
-    ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = base::paste0(round(tenureVals * 100, 1), "% of tree is on ", tenureGroups, " land" ), fill = tenureGroups),
+    ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = base::paste0(tenureGroups, " land: " , scales::percent(tenureVals, accuracy = 0.1)), fill = tenureGroups),
                                   stat = "identity",
                                   width = 1) +
     ggplot2::scale_fill_manual(
@@ -146,7 +175,20 @@ landuseBarcharts <- function(vegtypeData,
                                 limits=c(0, 1),
                                 expand = c(0, 0)) +
     ggplot2::scale_x_continuous(expand = c(0, 0)) +
-    ggplot2::ggtitle("Tenure split") +
+    ggplot2::ggtitle(
+      "Tree canopy cover by tenure", 
+      subtitle = titleWrapper(
+        base::paste0("Of the ", 
+          scales::percent(vegtypeVals[3], accuracy = 0.1), 
+          " tree canopy, ", 
+          scales::percent(tenureVals[2], accuracy = 0.1),
+          " resides on public land and ",
+          scales::percent(tenureVals[1], accuracy = 0.1),
+          " on private land:"
+          ), 
+          width =  titleWidth(width = plotWidth) 
+          )
+      ) +
     ggplot2::theme_classic() +
     ggplot2::theme(
       axis.title.x = ggplot2::element_blank(),
@@ -160,21 +202,36 @@ landuseBarcharts <- function(vegtypeData,
       legend.title = ggplot2::element_blank(),
       legend.text = ggplot2::element_text(size = 8),
       legend.key.size = ggplot2::unit(0.4, "cm"),
-      legend.margin = ggplot2::margin(0, 0, 0, 680),
+      legend.margin = ggplot2::margin(0, 0, 0, 120),
+      #legend.margin = ggplot2::margin(0, 0, 0, 680),
+      # plot.title = ggplot2::element_text(face = 'bold',
+      #                                    vjust = -5.5),
       plot.title = ggplot2::element_text(face = 'bold',
-                                         vjust = -5.5),
-      legend.position = "top"
+                                         vjust = 0),
+      #legend.position = "top"
+      legend.position = "none"
     )
   
   # Land-use bar chart
   landuseBar <- ggplot2::ggplot(landuseData,
                                 ggplot2::aes(1, landuseVals, group = landuseGroups)) +
-    ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = paste0(landuseGroups, ": ", round(landuseVals *
+    ggiraph::geom_bar_interactive(ggplot2::aes(tooltip = base::paste0(landuseGroups, ": ", base::round(landuseVals *
                                                                                     100, 1), "%"), fill = landuseGroups),
                                   stat = "identity",
                                   width = 1) +
     ggplot2::scale_fill_manual(
-      values = c('#e3ff8a', '#a6cee3', '#828282', '#fbd4f2', '#5ce8c7', '#ffed6f', '#bc80bd', '#fb8072', '#dcdcdc', '#b3de69', '#fdb462'),
+      values = c(
+        '#e3ff8a', '#a6cee3', '#828282', 
+        '#fbd4f2', '#5ce8c7', '#ffed6f', 
+        '#bc80bd', '#fb8072', '#dcdcdc', 
+        '#b3de69', '#fdb462'
+        ),
+      # c(
+      #   '#e3ff8a', '#a6cee3', '#828282', 
+      #   '#fbd4f2', '#5ce8c7', '#ffed6f', 
+      #   '#bc80bd', '#fb8072', '#dcdcdc', 
+      #   '#b3de69', '#fdb462'
+      #   ),
       guide = ggplot2::guide_legend(reverse = TRUE, nrow = 1)
     ) +
     ggplot2::coord_flip() +
@@ -182,7 +239,14 @@ landuseBarcharts <- function(vegtypeData,
                                 limits=c(0, 1),
                                 expand = c(0, 0)) +
     ggplot2::scale_x_continuous(expand = c(0, 0)) +
-    ggplot2::ggtitle("Land-use split") +
+    ggplot2::ggtitle(
+      "Land-use split",
+      subtitle = base::paste0(
+        "The entire of ",
+        SSCname,
+        " is comprised of the following land-uses: "
+      )
+      ) +
     ggplot2::theme_classic() +
     ggplot2::theme(
       axis.title.x = ggplot2::element_blank(),
@@ -197,10 +261,14 @@ landuseBarcharts <- function(vegtypeData,
       legend.text = ggplot2::element_text(size = 8),
       legend.key.size = ggplot2::unit(0.4, "cm"),
       legend.text.align = 0,
-      legend.margin = ggplot2::margin(0, 0, 0, 120),
+      legend.margin = ggplot2::margin(0, 0, 0, 0),
+      #legend.margin = ggplot2::margin(0, 0, 0, 120),
+      # plot.title = ggplot2::element_text(face = 'bold',
+      #                                    vjust = -5.5),
       plot.title = ggplot2::element_text(face = 'bold',
-                                         vjust = -5.5),
-      legend.position = "top"
+                                         vjust = 0),
+      #legend.position = "top"
+      legend.position = "none"
     )
   
   # Tree land-use bar chart
@@ -212,7 +280,12 @@ landuseBarcharts <- function(vegtypeData,
                                   stat = "identity",
                                   width = 1) +
     ggplot2::scale_fill_manual(
-      values = c('#e3ff8a', '#a6cee3', '#828282', '#fbd4f2', '#5ce8c7', '#ffed6f', '#bc80bd', '#fb8072', '#dcdcdc', '#b3de69', '#fdb462'),
+      values = c(
+        '#e3ff8a', '#a6cee3', '#828282', 
+        '#fbd4f2', '#5ce8c7', '#ffed6f', 
+        '#bc80bd', '#fb8072', '#dcdcdc', 
+        '#b3de69', '#fdb462'
+        ),
       guide = ggplot2::guide_legend(reverse = TRUE)
     ) +
     ggplot2::coord_flip() +
@@ -220,7 +293,14 @@ landuseBarcharts <- function(vegtypeData,
                                 limits=c(0, 1),
                                 expand = c(0, 0)) +
     ggplot2::scale_x_continuous(expand = c(0, 0)) +
-    ggplot2::ggtitle("Tree land-use split") +
+    ggplot2::ggtitle(
+      "Tree land-use split",
+      subtitle = base::paste0(
+        "The ",
+        scales::percent(vegtypeVals[3], accuracy = 0.1),
+        " tree canopy is distributed amongst the following land-uses:"
+      )
+      ) +
     ggplot2::theme_classic() +
     ggplot2::theme(
       axis.title.x = ggplot2::element_blank(),
@@ -232,13 +312,13 @@ landuseBarcharts <- function(vegtypeData,
       axis.ticks.y = ggplot2::element_blank(),
       axis.line.y = ggplot2::element_blank(),
       legend.title = ggplot2::element_blank(),
-      
-      
       legend.margin = ggplot2::margin(0, 0, 0, 0),
       plot.title = ggplot2::element_text(face = 'bold',
                                          vjust = 0),
       legend.position = "none"
     )
+
+    
   
   # Pass into ggiraph for interactive features
   ggiraph::girafe(code = print(vegtypeBar/tenureBar/landuseBar/treelanduseBar),
@@ -287,35 +367,108 @@ densityLabel <- function(xAxis){
 densityScatter <- function(scatter_selected_data,
                            scatter_quint_data,
                            scatter_remaining_data,
+                           scatter_full_data,
                            structureName,
                            uniqueID,
                            xAxis,
                            yAxis, 
                            plotWidth,
                            plotHeight){
+  
+  if(xAxis == 'GrDwDens'){
+    xlim  <- base::c(0,40)
+    xlabel  <- 42.8
+  } else if(xAxis == 'UrbDwDens'){
+    xlim  <- c(0,40)
+    xlabel  <- 42.8
+  } else if(xAxis == 'ResDwDens'){
+     xlim  <- c(0,70)
+    xlabel  <- 75
+  }
+
   plot <- ggplot2::ggplot() +
+  ggplot2::coord_cartesian(
+    xlim = xlim,
+    ylim = c(0,60),
+    clip = 'off')+
+  ggplot2::annotate(
+    geom = "text", 
+    x = xlabel, 
+    y = base::mean(
+        scatter_full_data[[yAxis]]
+        ), 
+    label = "Average", 
+    color = "#636363",
+    angle = 270
+    )+
+   ggplot2::annotate(
+    geom = "text", 
+    y = 64.5, 
+    x = base::mean(
+        scatter_full_data[[xAxis]]
+        ), 
+    label = "Average", 
+    color = "#636363",
+    angle = 0
+    )+ 
+  ggiraph::geom_vline_interactive(
+    xintercept = base::mean(
+      scatter_full_data[[xAxis]]
+      ), 
+    color ="#bdbdbd", 
+    linetype = "dotted", 
+    tooltip = base::paste0(
+      "Average density: ", 
+      scales::percent(
+        base::mean(
+          scatter_full_data[[xAxis]]
+          ), 
+          accuracy = 0.1,
+          scale = 1
+          )
+          ),
+    lwd = 1.25
+    ) +
+    ggiraph::geom_hline_interactive(
+    yintercept = base::mean(
+      scatter_full_data[[yAxis]]
+      ), 
+    color ="#bdbdbd", 
+    linetype = "dotted", 
+    tooltip = base::paste0(
+      "Average tree canopy cover: ", 
+      scales::percent(
+        base::mean(
+          scatter_full_data[[xAxis]]
+          ), 
+          accuracy = 0.1,
+          scale = 1
+          )
+          ),
+    lwd = 1.25
+    ) +
     ggiraph::geom_point_interactive(
       ggplot2::aes(
         x = scatter_remaining_data[[xAxis]],
         y = scatter_remaining_data[[yAxis]],
         data_id = scatter_remaining_data[[uniqueID]],
-        tooltip = paste0(
+        tooltip = base::paste0(
           "<b>",scatter_remaining_data[[structureName]],"</b>",
           "<br>",
           "Different density: ",
           base::round(scatter_remaining_data[[xAxis]],1),
           "<br>",
           "Tree canopy: ",
-          base::round(scatter_remaining_data[[xAxis]],1),
+          base::round(scatter_remaining_data[[yAxis]],1),
           "%"
         )
       ),
-      color = "#a3a3a3",
-      alpha = 0.75,
+      color = "#c6dbef",
+      alpha = 0.85,
       size = 4,
       shape=16,
       stroke = 0
-    ) +
+   ) +
     ggiraph::geom_point_interactive(
       ggplot2::aes(
         x = scatter_quint_data[[xAxis]],
@@ -328,12 +481,12 @@ densityScatter <- function(scatter_selected_data,
           base::round(scatter_quint_data[[xAxis]],1),
           "<br>",
           "Tree canopy: ",
-          base::round(scatter_quint_data[[xAxis]],1),
+          base::round(scatter_quint_data[[yAxis]],1),
           "%"
         )
       ),
-      color = "#4f84e0",
-      alpha = 0.75,
+      color = "#6baed6",
+      alpha = 0.85,
       size = 4,
       shape=16,
       stroke = 0
@@ -350,11 +503,11 @@ densityScatter <- function(scatter_selected_data,
           base::round(scatter_selected_data[[xAxis]],1),
           "<br>",
           "Tree canopy: ",
-          base::round(scatter_selected_data[[xAxis]],1),
+          base::round(scatter_selected_data[[yAxis]],1),
           "%"
         )
       ),
-      color = "#fc3003",
+      color = "#084594",
       size = 4,
       shape=16,
       stroke = 0
@@ -366,7 +519,10 @@ densityScatter <- function(scatter_selected_data,
     ggplot2::scale_y_continuous(label = scales::percent_format(accuracy = 1, scale = 1)
                                 #expand = c(0, 0)
     ) +
-    ggplot2::theme_classic() 
+    ggplot2::theme_light() +
+    ggplot2::theme(
+      plot.margin = ggplot2::margin(2.0, 0.75, 0.5, 0, "cm")
+    )
   
   girafe <- ggiraph::girafe(
     code = print(plot),
@@ -374,7 +530,9 @@ densityScatter <- function(scatter_selected_data,
     width_svg = plotWidth, 
     height_svg = plotHeight,
     options = list(
-      ggiraph::opts_selection(type = "single", only_shiny = FALSE),
+      ggiraph::opts_selection(type = "single", 
+      only_shiny = FALSE,
+      css = "fill:#084594;stroke:none;r:3.5pt;"),
       ggiraph::opts_toolbar(saveaspng = FALSE),
       ggiraph::opts_tooltip(
         use_fill = TRUE,

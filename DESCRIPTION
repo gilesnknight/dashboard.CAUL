@@ -20,7 +20,9 @@ Imports:
     echarts4r,
     ggiraph,
     patchwork,
-    gdtools
+    gdtools,
+    shinyalert,
+    kableExtra
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1

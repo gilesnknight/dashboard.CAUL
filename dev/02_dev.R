@@ -27,6 +27,8 @@ usethis::use_package( "echarts4r" )
 usethis::use_package( "ggiraph" )
 usethis::use_package( "patchwork" )
 usethis::use_package( "gdtools" )
+usethis::use_package( "shinyalert" )
+usethis::use_package( "kableExtra" )
 usethis::use_pipe()
 
 #packages go here
@@ -47,6 +49,7 @@ golem::add_fct( "scatter_tools" )
 golem::add_fct( "map_polygons" ) 
 golem::add_fct( "echarts" ) 
 golem::add_fct( "ggiraph" ) 
+golem::add_fct( "cityCompare" ) 
 
 golem::add_utils( "helpers" )
 

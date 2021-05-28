@@ -173,3 +173,287 @@ background-color: transparent;
   font-weight: bold;
   color: #FFFFFF !important;
 }
+
+/* Legend button */
+/* #PER_barInfo {
+  position: absolute;
+  top: 49px;
+  right: 44px;
+  z-index: 1;
+  color: #016939;
+  background-color: white;
+  border-color: #016939;
+  } */
+@media (min-width:900px) {
+  #PER_barInfo {
+    position: absolute;
+    top: 49px;
+    right: 44px;
+    z-index: 1;
+    color: #016939;
+    background-color: white;
+    border-color: #016939;
+    transition: 0.3s;
+    }
+
+    #MEL_barInfo {
+      position: absolute;
+      top: 49px;
+      right: 44px;
+      z-index: 1;
+      color: #016939;
+      background-color: white;
+      border-color: #016939;
+      transition: 0.3s;
+      }
+      #SYD_barInfo {
+        position: absolute;
+        top: 49px;
+        right: 44px;
+        z-index: 1;
+        color: #016939;
+        background-color: white;
+        border-color: #016939;
+        transition: 0.3s;
+        }
+  
+
+#PER_barInfo:hover {
+  position: absolute;
+  top: 49px;
+  right: 44px;
+  z-index: 1;
+  color: white;
+  background-color: #008346;
+  border-color: white;
+}
+#SYD_barInfo:hover {
+  position: absolute;
+  top: 49px;
+  right: 44px;
+  z-index: 1;
+  color: white;
+  background-color: #008346;
+  border-color: white;
+}
+
+#MEL_barInfo:hover {
+  position: absolute;
+  top: 49px;
+  right: 44px;
+  z-index: 1;
+  color: white;
+  background-color: #008346;
+  border-color: white;
+}
+
+.confirm {
+  background-color: white !important;
+  color: #016939 !important;
+  border: 1px solid #016939 !important;
+  box-shadow: none;
+  font-size: 17px;
+  font-weight: 500;
+  -webkit-border-radius: 4px;
+  border-radius: 5px;
+  padding: 10px 32px;
+  margin: 26px 5px 0;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.confirm:hover {
+  color: white !important;
+  border-color: white !important;
+  background-color: #008346 !important;
+}
+.sweet-alert.alert-size-s {
+  width: 350px !important;
+}
+
+.selectize-input {
+  position: absolute;
+  top: -11.5px;
+  right: -169px;
+  font-weight: bold;
+}
+
+/* .densitySelector .selectize-input{
+    position: absolute !important;
+    top: -25px;
+    right: -140px;
+} */
+.densitySelector {
+  font-weight: bold;
+  font-size: 15px;
+  position: absolute !important;
+  top: 50px;
+  z-index: 1;
+  right: 420px;
+  }
+
+  .densitySelector .selectize-input {
+    position: absolute;
+    font-weight: normal !important;
+    top: -35px !important;
+    right: -100px !important;
+    font-weight: bold !important;
+  }
+
+.well{
+  background-color: transparent !important;
+  border: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+#PER_SSC_map{
+  position: absolute !important;
+  margin-top: 27px;
+}
+#SYD_SSC_map{
+  position: absolute !important;
+  margin-top: 27px;
+}
+#MEL_SSC_map{
+  position: absolute !important;
+  margin-top: 27px;
+}
+.Suburb {
+  font-weight: bold;
+  font-size: 20px;
+  position: absolute;
+  top: 4px;
+}
+
+#PER_SSC_map {
+  border: 1px solid #ddd;
+  width: 98% !important;
+}
+
+#AYD_SSC_map {
+  border: 1px solid #ddd;
+  width: 98% !important;
+}
+
+#MEL_SSC_map {
+  border: 1px solid #ddd;
+  width: 98% !important;
+}
+
+
+
+#PER_densityInfo {
+  position: absolute;
+  top: 49px;
+  right: 44px;
+  z-index: 1;
+  color: #016939;
+  background-color: white;
+  border-color: #016939;
+  transition: 0.3s;
+  }
+
+#PER_densityInfo:hover {
+position: absolute;
+top: 49px;
+right: 44px;
+z-index: 1;
+color: white;
+background-color: #008346;
+border-color: white;
+}
+
+#MEL_densityInfo {
+  position: absolute;
+  top: 49px;
+  right: 44px;
+  z-index: 1;
+  color: #016939;
+  background-color: white;
+  border-color: #016939;
+  transition: 0.3s;
+  }
+
+#MEL_densityInfo:hover {
+position: absolute;
+top: 49px;
+right: 44px;
+z-index: 1;
+color: white;
+background-color: #008346;
+border-color: white;
+}
+
+#SYD_densityInfo {
+  position: absolute;
+  top: 49px;
+  right: 44px;
+  z-index: 1;
+  color: #016939;
+  background-color: white;
+  border-color: #016939;
+  transition: 0.3s;
+  }
+
+#SYD_densityInfo:hover {
+position: absolute;
+top: 49px;
+right: 44px;
+z-index: 1;
+color: white;
+background-color: #008346;
+border-color: white;
+}
+
+#error-message {
+  display: none;
+}
+
+
+/* @media (max-width:900px) { 
+  #error-message {
+    display: block;
+    width: 100vh !important;
+     height: 100vh !important;
+     background-color: white !important;
+     position: relative !important;
+     z-index: 999999 !important;
+  } */
+} 
+
+
+
+@media screen and (max-width:900px) {
+  #error-message {
+    display: block;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 60vh;
+    font-weight: bold;
+    font-size: large;
+    /* width: 100vh !important; */
+     height: 100vh !important;
+     background-color: white !important;
+     position: relative !important;
+     z-index: 999999 !important;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

@@ -25,8 +25,9 @@
 base_map <- function() {
   leaflet::leaflet() %>%
     # leaflet::addTiles()
-    leaflet::addTiles(urlTemplate = 'https://api.mapbox.com/styles/v1/gilesnknight/ckjje9wsc0jf11ale4cvociam/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZ2lsZXNua25pZ2h0IiwiYSI6ImNraGJwZjh4ejBjem0yeW1wMDd1aGtsdXIifQ.AMSHzUdFu0oZa_rxHnPPKQ',
-                      attribution = "© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a>")
+    leaflet::addProviderTiles(providers$CartoDB.PositronNoLabels)
+    # leaflet::addTiles(urlTemplate = 'https://api.mapbox.com/styles/v1/gilesnknight/ckjje9wsc0jf11ale4cvociam/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZ2lsZXNua25pZ2h0IiwiYSI6ImNraGJwZjh4ejBjem0yeW1wMDd1aGtsdXIifQ.AMSHzUdFu0oZa_rxHnPPKQ',
+    #                   attribution = "© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a>")
 }
 
 map_add_polys <- function(df,
@@ -153,7 +154,7 @@ canopy_map <- function(
       fillColor = ~pal(structureTree),
       highlight = highlightOptions(
         weight = 3.5,
-        color = "red",
+        color = "#084594",
         opacity = 0.4,
         bringToFront = FALSE,
         sendToBack = TRUE
