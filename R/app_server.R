@@ -90,7 +90,7 @@ app_server <- function(input, output, session) {
   dimensions <- shiny::reactiveValues()
 
   shiny::observe({
-
+    #browser()
     dimensions$width <- function(){base::round(((input$width/1.5)*0.0104166), 2)}
     dimensions$height <- function(){base::round((input$height*0.0104166), 2)}
     #base::print(base::paste("is",input$width))
@@ -135,7 +135,9 @@ app_server <- function(input, output, session) {
 
   # Output PER bar charts
   output$PER_barcharts <- ggiraph::renderGirafe({
-
+    shiny::req(dimensions$current)
+    
+    #shinyjs::delay(2000)
     # Default PER bar chart data
     PER_SSC_bar_data <- filter_SSC(
       df = PER_SSC_DATA,
@@ -435,7 +437,7 @@ app_server <- function(input, output, session) {
 
   # Output MEL bar charts
   output$MEL_barcharts <- ggiraph::renderGirafe({
-
+    shiny::req(dimensions$current)
     # Default MEL bar chart data
     MEL_SSC_bar_data <- filter_SSC(
       df = MEL_SSC_DATA,
@@ -734,7 +736,7 @@ app_server <- function(input, output, session) {
   
   # Output SYD bar charts
   output$SYD_barcharts <- ggiraph::renderGirafe({
-    
+    shiny::req(dimensions$current)
     # Default SYD bar chart data
     SYD_SSC_bar_data <- filter_SSC(
       df = SYD_SSC_DATA,

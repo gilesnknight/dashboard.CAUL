@@ -282,14 +282,23 @@ background-color: transparent;
     top: -25px;
     right: -140px;
 } */
-.densitySelector {
+/* .densitySelector {
   font-weight: bold;
   font-size: 15px;
   position: absolute !important;
   top: 50px;
   z-index: 1;
   right: 420px;
-  }
+  } */
+  .densitySelector {
+    font-weight: bold;
+    font-size: 15px;
+    position: absolute !important;
+    top: 50px;
+    z-index: 1;
+    right: 40%;
+    }
+  
 
   .densitySelector .selectize-input {
     position: absolute;
