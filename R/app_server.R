@@ -120,15 +120,15 @@ app_server <- function(input, output, session) {
   shiny::observeEvent(input$PER_densityInfo, {
     # Show a modal when the button is pressed
     shinyalert::shinyalert(
-      imageUrl = 'www/legend.svg',
+      imageUrl = 'www/scatterLegend.png',
       imageWidth = 300,
-      imageHeight = 400,
+      imageHeight = 250,
       closeOnClickOutside = TRUE,
       closeOnEsc = TRUE,
       size = 's'
       # imageWidth = 289.45,
       # imageHeight = 476.35
-      )
+    )
   })
 
 
@@ -279,6 +279,7 @@ app_server <- function(input, output, session) {
       uniqueID = "SSC_CODE16",
       xAxis = input$PER_dens,
       yAxis = "PerAnyTree",
+      city = "PER",
       structureName = "SSC_NAME16",
       plotWidth = dimensions$current[1],
       plotHeight = dimensions$current[2]
@@ -419,9 +420,9 @@ app_server <- function(input, output, session) {
   shiny::observeEvent(input$MEL_densityInfo, {
     # Show a modal when the button is pressed
     shinyalert::shinyalert(
-      imageUrl = 'www/legend.svg',
+      imageUrl = 'www/scatterLegend.png',
       imageWidth = 300,
-      imageHeight = 400,
+      imageHeight = 250,
       closeOnClickOutside = TRUE,
       closeOnEsc = TRUE,
       size = 's'
@@ -521,7 +522,6 @@ app_server <- function(input, output, session) {
 
   # Output MEL density scatters
   output$MEL_densityScatter <- ggiraph::renderGirafe({
-
     # Determines the density quintile to use based off selected type
     if (input$MEL_dens == "GrDwDens") {
       densityQuint  <- "GrDenQuint"
@@ -578,6 +578,7 @@ app_server <- function(input, output, session) {
       uniqueID = "SSC_CODE16",
       xAxis = input$MEL_dens,
       yAxis = "PerAnyTree",
+      city = "MEL",
       structureName = "SSC_NAME16",
       plotWidth = dimensions$current[1],
       plotHeight = dimensions$current[2]
@@ -718,9 +719,9 @@ app_server <- function(input, output, session) {
   shiny::observeEvent(input$SYD_densityInfo, {
     # Show a modal when the button is pressed
     shinyalert::shinyalert(
-      imageUrl = 'www/legend.svg',
+      imageUrl = 'www/scatterLegend.png',
       imageWidth = 300,
-      imageHeight = 400,
+      imageHeight = 250,
       closeOnClickOutside = TRUE,
       closeOnEsc = TRUE,
       size = 's'
@@ -877,6 +878,7 @@ app_server <- function(input, output, session) {
       uniqueID = "SSC_CODE16",
       xAxis = input$SYD_dens,
       yAxis = "PerAnyTree",
+      city = "SYD",
       structureName = "SSC_NAME16",
       plotWidth = dimensions$current[1],
       plotHeight = dimensions$current[2]

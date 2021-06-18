@@ -151,11 +151,11 @@ app_ui <- function(request) {
               ),
               shiny::tabPanel(
                 "Suburb comparison",
-                shiny::actionButton("SYD_densityInfo", "LEGEND"),
+                shiny::actionButton("MEL_densityInfo", "LEGEND"),
                 tags$div(class = "densitySelector", checked = NA,
                 tags$p("Density type: "),
 
-                shiny::selectInput("SYD_dens",
+                shiny::selectInput("MEL_dens",
                   label = NULL,
                   base::c(
                     "Gross density" = "GrDwDens",
@@ -211,10 +211,10 @@ app_ui <- function(request) {
               ),
               shiny::tabPanel(
                 "Suburb comparison",
-                #shiny::actionButton("SYD_densityInfo", "LEGEND"),
+                shiny::actionButton("SYD_densityInfo", "LEGEND"),
                 tags$div(class = "densitySelector", checked = NA,
                          tags$p("Density type: "),
-
+                        
                          shiny::selectInput("SYD_dens",
                                             label = NULL,
                                             base::c(

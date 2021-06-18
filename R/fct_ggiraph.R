@@ -370,26 +370,63 @@ densityScatter <- function(scatter_selected_data,
                            scatter_full_data,
                            structureName,
                            uniqueID,
+                           city,
                            xAxis,
                            yAxis, 
                            plotWidth,
                            plotHeight){
   
-  if(xAxis == 'GrDwDens'){
-    xlim  <- base::c(0,40)
-    xlabel  <- 42.8
-  } else if(xAxis == 'UrbDwDens'){
-    xlim  <- c(0,40)
-    xlabel  <- 42.8
-  } else if(xAxis == 'ResDwDens'){
-     xlim  <- c(0,70)
-    xlabel  <- 75
+  if(city == "PER"){
+    ylim <- c(0,60)
+    if(xAxis == 'GrDwDens'){
+      xlim  <- base::c(0,40)
+      xlabel  <- 42.8
+      ylabel <- 64.5
+    } else if(xAxis == 'UrbDwDens'){
+      xlim  <- c(0,40)
+      xlabel  <- 42.8
+      ylabel <- 64.5
+    } else if(xAxis == 'ResDwDens'){
+      xlim  <- c(0,70)
+      xlabel  <- 75
+      ylabel <- 64.5
+    }
+  } else if(city == "MEL"){
+    ylim <- c(0,60)
+    if(xAxis == 'GrDwDens'){
+      xlim  <- base::c(0,80)
+      xlabel  <- 85.8
+      ylabel <- 64.5
+    } else if(xAxis == 'UrbDwDens'){
+      xlim  <- c(0,80)
+      xlabel  <- 85.8
+      ylabel <- 64.5
+    } else if(xAxis == 'ResDwDens'){
+      xlim  <- c(0,250)
+      xlabel  <- 268.5
+      ylabel <- 64.5
+    }
+  } else if(city == "SYD"){
+    ylim <- c(0,95)
+    if(xAxis == 'GrDwDens'){
+      xlim  <- base::c(0,160)
+      xlabel  <- 171
+      ylabel <- 102.5
+    } else if(xAxis == 'UrbDwDens'){
+      xlim  <- c(0,160)
+      xlabel  <- 171
+      ylabel <- 102.5
+    } else if(xAxis == 'ResDwDens'){
+      xlim  <- c(0,320)
+      xlabel  <- 343
+      ylabel <- 102.5
+    }
   }
 
   plot <- ggplot2::ggplot() +
   ggplot2::coord_cartesian(
     xlim = xlim,
-    ylim = c(0,60),
+    ylim = ylim,
     clip = 'off')+
   ggplot2::annotate(
     geom = "text", 
@@ -403,7 +440,7 @@ densityScatter <- function(scatter_selected_data,
     )+
    ggplot2::annotate(
     geom = "text", 
-    y = 64.5, 
+    y = ylabel, 
     x = base::mean(
         scatter_full_data[[xAxis]]
         ), 
@@ -507,7 +544,7 @@ densityScatter <- function(scatter_selected_data,
           "%"
         )
       ),
-      color = "#084594",
+      color = "red", #084594
       size = 4,
       shape=16,
       stroke = 0
@@ -532,7 +569,7 @@ densityScatter <- function(scatter_selected_data,
     options = list(
       ggiraph::opts_selection(type = "single", 
       only_shiny = FALSE,
-      css = "fill:#084594;stroke:none;r:3.5pt;"),
+      css = "fill:red;stroke:none;r:3.5pt;"), #"fill:#084594;stroke:none;r:3.5pt;"
       ggiraph::opts_toolbar(saveaspng = FALSE),
       ggiraph::opts_tooltip(
         use_fill = TRUE,
