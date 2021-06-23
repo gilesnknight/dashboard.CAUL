@@ -23,7 +23,6 @@ SYD_SSC_DATA <- base::readRDS("inst/extdata/SYD_SSC_DATA.rds")
 ALL_SSC_DATA <- base::readRDS("inst/extdata/ALL_SSC_DATA.rds")
 
 
-
 # Server ------------------------------------------------------------------
 
 app_server <- function(input, output, session) {
@@ -156,9 +155,9 @@ app_server <- function(input, output, session) {
     # Filters PER_SSC_pie_data for the land tenure bar chart
     PER_privpubl_bar_data <- filter_barchart(
       PER_SSC_bar_data,
-      columnsToPlot = base::c("TrPriv", "TrPubl"),
-      newNames = base::c("Private", "Public"),
-      order = base::c("Private", "Public")
+      columnsToPlot = base::c("TrPriv", "TrPubl", "TrOth"),
+      newNames = base::c("Private", "Public", "Other"),
+      order = base::c("Private", "Public", "Other")
     )
 
     # Filters PER_SSC_bar_data for the land use bar chart
@@ -456,9 +455,9 @@ app_server <- function(input, output, session) {
     # Filters MEL_SSC_pie_data for the land tenure bar chart
     MEL_privpubl_bar_data <- filter_barchart(
       MEL_SSC_bar_data,
-      columnsToPlot = base::c("TrPriv", "TrPubl"),
-      newNames = base::c("Private", "Public"),
-      order = base::c("Private", "Public")
+      columnsToPlot = base::c("TrPriv", "TrPubl", "TrOth"),
+      newNames = base::c("Private", "Public", "Other"),
+      order = base::c("Private", "Public", "Other")
     )
 
     # Filters MEL_SSC_bar_data for the land use bar chart
@@ -755,9 +754,9 @@ app_server <- function(input, output, session) {
     # Filters SYD_SSC_pie_data for the land tenure bar chart
     SYD_privpubl_bar_data <- filter_barchart(
       SYD_SSC_bar_data,
-      columnsToPlot = base::c("TrPriv", "TrPubl"),
-      newNames = base::c("Private", "Public"),
-      order = base::c("Private", "Public")
+      columnsToPlot = base::c("TrPriv", "TrPubl", "TrOth"),
+      newNames = base::c("Private", "Public", "Other"),
+      order = base::c("Private", "Public", "Other")
     )
     
     # Filters SYD_SSC_bar_data for the land use bar chart

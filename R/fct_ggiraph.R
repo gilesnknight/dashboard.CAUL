@@ -126,7 +126,7 @@ landuseBarcharts <- function(vegtypeData,
     ) +
     ggplot2::coord_flip() +
     ggplot2::scale_y_continuous(position = "left", labels = scales::percent,
-                                limits=c(0, 1),
+                                limits=c(0, 1.0001),
                                 expand = c(0, 0)) +
     ggplot2::scale_x_continuous(expand = c(0, 0)) +
     ggplot2::ggtitle("Vegetation cover",
@@ -159,7 +159,7 @@ landuseBarcharts <- function(vegtypeData,
       #legend.position = "top"
       legend.position = "none"
     )
-  
+
   # Land tenure bar chart
   tenureBar <- ggplot2::ggplot(tenureData,
                                ggplot2::aes(1, tenureVals, group = tenureGroups)) +
@@ -167,12 +167,12 @@ landuseBarcharts <- function(vegtypeData,
                                   stat = "identity",
                                   width = 1) +
     ggplot2::scale_fill_manual(
-      values = c('#de2d26', '#3182bd'),
+      values = c('#de2d26', '#3182bd', '#FFFFBE'),
       guide = ggplot2::guide_legend(reverse = TRUE)
     ) +
     ggplot2::coord_flip() +
     ggplot2::scale_y_continuous(position = "left", labels = scales::percent,
-                                limits=c(0, 1),
+                                limits=c(0, 1.0001),
                                 expand = c(0, 0)) +
     ggplot2::scale_x_continuous(expand = c(0, 0)) +
     ggplot2::ggtitle(
@@ -236,7 +236,7 @@ landuseBarcharts <- function(vegtypeData,
     ) +
     ggplot2::coord_flip() +
     ggplot2::scale_y_continuous(position = "left", labels = scales::percent,
-                                limits=c(0, 1),
+                                limits=c(0, 1.0001),
                                 expand = c(0, 0)) +
     ggplot2::scale_x_continuous(expand = c(0, 0)) +
     ggplot2::ggtitle(
@@ -290,7 +290,7 @@ landuseBarcharts <- function(vegtypeData,
     ) +
     ggplot2::coord_flip() +
     ggplot2::scale_y_continuous(position = "left", labels = scales::percent,
-                                limits=c(0, 1),
+                                limits=c(0, 1.0001),
                                 expand = c(0, 0)) +
     ggplot2::scale_x_continuous(expand = c(0, 0)) +
     ggplot2::ggtitle(

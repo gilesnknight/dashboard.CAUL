@@ -30,7 +30,7 @@ ui <- fluidPage(
                         condition = "input.MEL_SSC_compare_SSC_check == true",
                         shiny::selectizeInput(
                             "MEL_SSC_compare_dropdown",
-                            label = "Select a suburb", 
+                            label = "Select a suburb",
                             choices = MEL_SSC_DATA$SSC_NAME16,
                             selected = NULL,
                             options = list(
@@ -69,10 +69,10 @@ server <- function(input, output) {
         if(switch == TRUE){
             return(
                 ggplot2::geom_vline(
-                    xintercept=base::as.numeric(df[df[["SSC_CODE16"]] == selectedSSC, ]["PerAnyTree"]), 
-                    size=0.5, 
+                    xintercept=base::as.numeric(df[df[["SSC_CODE16"]] == selectedSSC, ]["PerAnyTree"]),
+                    size=0.5,
                     color= colour
-                ) 
+                )
             )
         } else {
             return(NULL)
@@ -129,7 +129,7 @@ server <- function(input, output) {
     }
 
     SSC_compare <- shiny::reactiveValues(active = base::vector(mode = "numeric"))
-    
+
     observeEvent(input$PER_SSC_compare_dropdown,{
         if(input$PER_SSC_compare_dropdown == ""){
             SSC_compare$PER <- NULL
@@ -157,7 +157,7 @@ server <- function(input, output) {
             print(SSC_compare$SYD)
         }
     })
-    
+
     output$densityPlot <- renderPlot({
         densityPlot <- ggplot2::ggplot(
         ) +
@@ -183,40 +183,40 @@ server <- function(input, output) {
                 colour = "#8da0cb"
             ) +
             SSClineGeomSwitch(
-                switch = input$PER_SSC_compare_SSC_check, 
-                df = PER_SSC_DATA, 
-                colour = "#66c2a5", 
+                switch = input$PER_SSC_compare_SSC_check,
+                df = PER_SSC_DATA,
+                colour = "#66c2a5",
                 selectedSSC = SSC_compare$PER
             ) +
             SSClineGeomSwitch(
-                switch = input$MEL_SSC_compare_SSC_check, 
-                df = MEL_SSC_DATA, 
-                colour = "#fc8d62", 
+                switch = input$MEL_SSC_compare_SSC_check,
+                df = MEL_SSC_DATA,
+                colour = "#fc8d62",
                 selectedSSC = SSC_compare$MEL
             ) +
             SSClineGeomSwitch(
-                switch = input$SYD_SSC_compare_SSC_check, 
-                df = SYD_SSC_DATA, 
-                colour = "#8da0cb", 
+                switch = input$SYD_SSC_compare_SSC_check,
+                df = SYD_SSC_DATA,
+                colour = "#8da0cb",
                 selectedSSC = SSC_compare$SYD
             ) +
             ggplot2::labs(
-                y = "Density", 
+                y = "Density",
                 x = "Tree canopy cover"
                 ) +
             ggplot2::scale_y_continuous(
-                expand = c(0, 0.0), 
+                expand = c(0, 0.0),
                 limits = c(0, 0.08)
             ) +
             ggplot2::scale_x_continuous(
                 label = scales::percent_format(accuracy = 1, scale = 1),
-                expand = c(0, 0), 
+                expand = c(0, 0),
                 limits = c(0, 95)
             ) +
             ggplot2::theme_light(
-                
-            ) 
-        
+
+            )
+
     densityPlot
     })
 }

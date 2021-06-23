@@ -1,1 +1,78 @@
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198.07 326.3"><defs><style>.cls-1{font-size:12px;}.cls-1,.cls-21,.cls-23{fill:#231f20;}.cls-1,.cls-23{font-family:Helvetica-Bold, Helvetica;font-weight:700;}.cls-2{letter-spacing:-0.05em;}.cls-3{letter-spacing:-0.07em;}.cls-4{fill:#32a354;}.cls-5{fill:#e8e8e8;}.cls-6{fill:#c8e3bb;}.cls-7{fill:#88c981;}.cls-8{fill:#3182be;}.cls-9{fill:#de2f27;}.cls-10{fill:#fbb463;}.cls-11{fill:#f47f72;}.cls-12{fill:#dcdcdc;}.cls-13{fill:#b4d66c;}.cls-14{fill:#bc80b7;}.cls-15{fill:#feec6e;}.cls-16{fill:#f5d4e5;}.cls-17{fill:#79cab9;}.cls-18{fill:#828282;}.cls-19{fill:#a7cee2;}.cls-20{fill:#e1e88a;}.cls-21{font-size:10px;font-family:Helvetica;}.cls-22{letter-spacing:-0.04em;}.cls-23{font-size:14px;}</style></defs><text class="cls-1" transform="translate(0 37.48)"><tspan class="cls-2">V</tspan><tspan x="7.35" y="0">egetation type:</tspan></text><text class="cls-1" transform="translate(0 129.9)"><tspan class="cls-3">T</tspan><tspan x="6.45" y="0">enure split:</tspan></text><text class="cls-1" transform="translate(0 186.9)">Land-use split/<tspan class="cls-2" x="84.67" y="0">T</tspan><tspan x="91.35" y="0">ree land-use split:</tspan></text><text x="-14.86" y="-12.94"/><rect class="cls-4" x="1.97" y="44.59" width="14.29" height="14.29"/><rect class="cls-5" x="1.97" y="95.22" width="14.29" height="14.29"/><rect class="cls-6" x="1.97" y="78.34" width="14.29" height="14.29"/><rect class="cls-7" x="1.97" y="61.46" width="14.29" height="14.29"/><rect class="cls-8" x="1.97" y="135.91" width="14.29" height="14.29"/><rect class="cls-9" x="1.97" y="152.79" width="14.29" height="14.29"/><rect class="cls-10" x="1.97" y="202.26" width="14.29" height="14.29"/><rect class="cls-11" x="1.97" y="252.89" width="14.29" height="14.29"/><rect class="cls-12" x="1.97" y="236.01" width="14.29" height="14.29"/><rect class="cls-13" x="1.97" y="219.14" width="14.29" height="14.29"/><rect class="cls-14" x="1.97" y="269.77" width="14.29" height="14.29"/><rect class="cls-15" x="93.2" y="202.26" width="14.29" height="14.29"/><rect class="cls-16" x="93.2" y="236.01" width="14.29" height="14.29"/><rect class="cls-17" x="93.2" y="219.14" width="14.29" height="14.29"/><rect class="cls-18" x="93.2" y="252.89" width="14.29" height="14.29"/><rect class="cls-19" x="1.97" y="286.64" width="14.29" height="14.29"/><rect class="cls-20" x="93.2" y="269.77" width="14.29" height="14.29"/><text class="cls-21" transform="translate(20.74 56.13)"><tspan class="cls-22">T</tspan><tspan x="5.74" y="0">ree</tspan></text><text class="cls-21" transform="translate(20.74 72.24)">Shrub</text><text class="cls-21" transform="translate(20.74 88.06)">Grass</text><text class="cls-21" transform="translate(20.74 106.36)">Non-vegetation</text><text class="cls-21" transform="translate(20.74 148.33)">Public land</text><text class="cls-21" transform="translate(20.74 163.93)">Private land</text><text class="cls-21" transform="translate(20.74 213.66)">Residential</text><text class="cls-21" transform="translate(20.74 230.01)">Parkland</text><text class="cls-21" transform="translate(20.74 247.27)">Infrastructure</text><text class="cls-21" transform="translate(20.74 264.08)">Other</text><text class="cls-21" transform="translate(20.74 281.23)">Industrial</text><text class="cls-21" transform="translate(20.74 297.58)"><tspan class="cls-22">W</tspan><tspan x="9.07" y="0">ater</tspan></text><text class="cls-21" transform="translate(113.04 213.66)">Education</text><text class="cls-21" transform="translate(113.04 230.81)">Commercial</text><text class="cls-21" transform="translate(113.04 247.2)">Hospital</text><text class="cls-21" transform="translate(113.04 264.35)"><tspan class="cls-22">T</tspan><tspan x="5.74" y="0">ransport</tspan></text><text class="cls-21" transform="translate(113.04 280.71)">Primary Production</text><text class="cls-23" transform="translate(84.94 12.04)">Legend</text></svg>
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 24.2.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 198.1 326.3" style="enable-background:new 0 0 198.1 326.3;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#231F20;}
+	.st1{font-family:'Helvetica-Bold';}
+	.st2{font-size:12px;}
+	.st3{fill:#32A354;}
+	.st4{fill:#E8E8E8;}
+	.st5{fill:#C8E3BB;}
+	.st6{fill:#88C981;}
+	.st7{fill:#3182BE;}
+	.st8{fill:#DE2F27;}
+	.st9{fill:#FBB463;}
+	.st10{fill:#F47F72;}
+	.st11{fill:#DCDCDC;}
+	.st12{fill:#B4D66C;}
+	.st13{fill:#BC80B7;}
+	.st14{fill:#FEEC6E;}
+	.st15{fill:#F5D4E5;}
+	.st16{fill:#79CAB9;}
+	.st17{fill:#828282;}
+	.st18{fill:#A7CEE2;}
+	.st19{fill:#E1E88A;}
+	.st20{font-family:'Helvetica';}
+	.st21{font-size:10px;}
+	.st22{font-size:14px;}
+	.st23{fill:#F5F5B9;}
+</style>
+<text transform="matrix(1 0 0 1 0 37.48)" class="st0 st1 st2">V</text>
+<text transform="matrix(1 0 0 1 7.35 37.48)" class="st0 st1 st2">egetation type:</text>
+<text transform="matrix(1 0 0 1 0 129.9)" class="st0 st1 st2">T</text>
+<text transform="matrix(1 0 0 1 6.45 129.9)" class="st0 st1 st2">enure split:</text>
+<text transform="matrix(1 0 0 1 0 186.9)" class="st0 st1 st2">Land-use split/</text>
+<text transform="matrix(1 0 0 1 84.67 186.9)" class="st0 st1 st2">T</text>
+<text transform="matrix(1 0 0 1 91.35 186.9)" class="st0 st1 st2">ree land-use split:</text>
+<rect x="2" y="44.6" class="st3" width="14.3" height="14.3"/>
+<rect x="2" y="95.2" class="st4" width="14.3" height="14.3"/>
+<rect x="2" y="78.3" class="st5" width="14.3" height="14.3"/>
+<rect x="2" y="61.5" class="st6" width="14.3" height="14.3"/>
+<rect x="2" y="135.9" class="st7" width="14.3" height="14.3"/>
+<rect x="2" y="152.8" class="st8" width="14.3" height="14.3"/>
+<rect x="2" y="202.3" class="st9" width="14.3" height="14.3"/>
+<rect x="2" y="252.9" class="st10" width="14.3" height="14.3"/>
+<rect x="2" y="236" class="st11" width="14.3" height="14.3"/>
+<rect x="2" y="219.1" class="st12" width="14.3" height="14.3"/>
+<rect x="2" y="269.8" class="st13" width="14.3" height="14.3"/>
+<rect x="93.2" y="202.3" class="st14" width="14.3" height="14.3"/>
+<rect x="93.2" y="236" class="st15" width="14.3" height="14.3"/>
+<rect x="93.2" y="219.1" class="st16" width="14.3" height="14.3"/>
+<rect x="93.2" y="252.9" class="st17" width="14.3" height="14.3"/>
+<rect x="2" y="286.6" class="st18" width="14.3" height="14.3"/>
+<rect x="93.2" y="269.8" class="st19" width="14.3" height="14.3"/>
+<text transform="matrix(1 0 0 1 20.74 56.13)" class="st0 st20 st21">T</text>
+<text transform="matrix(1 0 0 1 26.48 56.13)" class="st0 st20 st21">ree</text>
+<text transform="matrix(1 0 0 1 20.74 72.24)" class="st0 st20 st21">Shrub</text>
+<text transform="matrix(1 0 0 1 20.74 88.06)" class="st0 st20 st21">Grass</text>
+<text transform="matrix(1 0 0 1 20.74 106.36)" class="st0 st20 st21">Non-vegetation</text>
+<text transform="matrix(1 0 0 1 20.74 148.33)" class="st0 st20 st21">Public land</text>
+<text transform="matrix(1 0 0 1 20.74 163.93)" class="st0 st20 st21">Private land</text>
+<text transform="matrix(1 0 0 1 20.74 213.66)" class="st0 st20 st21">Residential</text>
+<text transform="matrix(1 0 0 1 20.74 230.01)" class="st0 st20 st21">Parkland</text>
+<text transform="matrix(1 0 0 1 20.74 247.27)" class="st0 st20 st21">Infrastructure</text>
+<text transform="matrix(1 0 0 1 20.74 264.08)" class="st0 st20 st21">Other</text>
+<text transform="matrix(1 0 0 1 20.74 281.23)" class="st0 st20 st21">Industrial</text>
+<text transform="matrix(1 0 0 1 20.74 297.58)" class="st0 st20 st21">W</text>
+<text transform="matrix(1 0 0 1 29.81 297.58)" class="st0 st20 st21">ater</text>
+<text transform="matrix(1 0 0 1 113.04 213.66)" class="st0 st20 st21">Education</text>
+<text transform="matrix(1 0 0 1 113.04 230.81)" class="st0 st20 st21">Commercial</text>
+<text transform="matrix(1 0 0 1 113.04 247.2)" class="st0 st20 st21">Hospital</text>
+<text transform="matrix(1 0 0 1 113.04 264.35)" class="st0 st20 st21">T</text>
+<text transform="matrix(1 0 0 1 118.78 264.35)" class="st0 st20 st21">ransport</text>
+<text transform="matrix(1 0 0 1 113.04 280.71)" class="st0 st20 st21">Primary Production</text>
+<text transform="matrix(1 0 0 1 84.94 12.04)" class="st0 st1 st22">Legend</text>
+<rect x="93.2" y="135.9" class="st23" width="14.3" height="14.3"/>
+<text transform="matrix(1 0 0 1 111.97 148.33)" class="st0 st20 st21">Other</text>
+</svg>

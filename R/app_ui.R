@@ -233,76 +233,76 @@ app_ui <- function(request) {
           )
         )
       ),
-      # shiny::tabPanel(
-      #   "Compare",
-      #   sidebarLayout(
-      #     sidebarPanel(
-      #       
-      #       width = 4,
-      #       tags$div(class = "compare", checked = NA,
-      #       h3('Perth'),
-      #       checkboxInput("PER_SSC_compare_check", label = "Plot Perth distribution", value = FALSE, width = NULL),
-      #       checkboxInput("PER_SSC_compare_SSC_check", label = "Plot a Perth suburb", value = FALSE, width = NULL),
-      #       conditionalPanel(
-      #         condition = "input.PER_SSC_compare_SSC_check == true",
-      #         shiny::selectizeInput(
-      #           "PER_SSC_compare_dropdown",
-      #           label = NULL,
-      #           choices = PER_SSC_DATA$SSC_NAME16,
-      #           width = '50%',
-      #           selected = NULL,
-      #           options = list(
-      #             placeholder = "Please select an option below",
-      #             onInitialize = base::I('function() { this.setValue(""); }')
-      #           )
-      #         )
-      #       ),
-      #       br(),
-      #       h3('Melbourne'),
-      #       checkboxInput("MEL_SSC_compare_check", label = "Plot Melbourne", value = FALSE, width = NULL),
-      #       checkboxInput("MEL_SSC_compare_SSC_check", label = "Plot a Melbourne suburb", value = FALSE, width = NULL),
-      #       conditionalPanel(
-      #         condition = "input.MEL_SSC_compare_SSC_check == true",
-      #         shiny::selectizeInput(
-      #           "MEL_SSC_compare_dropdown",
-      #           label = NULL,
-      #           choices = MEL_SSC_DATA$SSC_NAME16,
-      #           width = '50%',
-      #           selected = NULL,
-      #           options = list(
-      #             placeholder = "Please select an option below",
-      #             onInitialize = base::I('function() { this.setValue(""); }')
-      #           )
-      #         )
-      #       ),
-      #       br(),
-      #       h3('Sydney'),
-      #       checkboxInput("SYD_SSC_compare_check", label = "Plot Sydney", value = FALSE, width = NULL),
-      #       checkboxInput("SYD_SSC_compare_SSC_check", label = "Plot a Sydney suburb", value = FALSE, width = NULL),
-      #       conditionalPanel(
-      #         condition = "input.SYD_SSC_compare_SSC_check == true",
-      #         shiny::selectizeInput(
-      #           "SYD_SSC_compare_dropdown",
-      #           label = NULL,
-      #           choices = SYD_SSC_DATA$SSC_NAME16,
-      #           width = '50%',
-      #           selected = NULL,
-      #           options = list(
-      #             placeholder = "Please select an option below",
-      #             onInitialize = base::I('function() { this.setValue(""); }')
-      #           )
-      #         )
-      #       ),
-      #     )
-      #     ),
-      #     
-      #     mainPanel(
-      #       width = 8,
-      #       plotOutput("densityPlot"),
-      #       htmlOutput("compareTable") 
-      #     )
-      #   )
-      # ),
+      shiny::tabPanel(
+        "Compare",
+        sidebarLayout(
+          sidebarPanel(
+
+            width = 4,
+            tags$div(class = "compare", checked = NA,
+            h3('Perth'),
+            checkboxInput("PER_SSC_compare_check", label = "Plot Perth distribution", value = FALSE, width = NULL),
+            checkboxInput("PER_SSC_compare_SSC_check", label = "Plot a Perth suburb", value = FALSE, width = NULL),
+            conditionalPanel(
+              condition = "input.PER_SSC_compare_SSC_check == true",
+              shiny::selectizeInput(
+                "PER_SSC_compare_dropdown",
+                label = NULL,
+                choices = PER_SSC_DATA$SSC_NAME16,
+                width = '50%',
+                selected = NULL,
+                options = list(
+                  placeholder = "Please select an option below",
+                  onInitialize = base::I('function() { this.setValue(""); }')
+                )
+              )
+            ),
+            br(),
+            h3('Melbourne'),
+            checkboxInput("MEL_SSC_compare_check", label = "Plot Melbourne", value = FALSE, width = NULL),
+            checkboxInput("MEL_SSC_compare_SSC_check", label = "Plot a Melbourne suburb", value = FALSE, width = NULL),
+            conditionalPanel(
+              condition = "input.MEL_SSC_compare_SSC_check == true",
+              shiny::selectizeInput(
+                "MEL_SSC_compare_dropdown",
+                label = NULL,
+                choices = MEL_SSC_DATA$SSC_NAME16,
+                width = '50%',
+                selected = NULL,
+                options = list(
+                  placeholder = "Please select an option below",
+                  onInitialize = base::I('function() { this.setValue(""); }')
+                )
+              )
+            ),
+            br(),
+            h3('Sydney'),
+            checkboxInput("SYD_SSC_compare_check", label = "Plot Sydney", value = FALSE, width = NULL),
+            checkboxInput("SYD_SSC_compare_SSC_check", label = "Plot a Sydney suburb", value = FALSE, width = NULL),
+            conditionalPanel(
+              condition = "input.SYD_SSC_compare_SSC_check == true",
+              shiny::selectizeInput(
+                "SYD_SSC_compare_dropdown",
+                label = NULL,
+                choices = SYD_SSC_DATA$SSC_NAME16,
+                width = '50%',
+                selected = NULL,
+                options = list(
+                  placeholder = "Please select an option below",
+                  onInitialize = base::I('function() { this.setValue(""); }')
+                )
+              )
+            ),
+          )
+          ),
+
+          mainPanel(
+            width = 8,
+            plotOutput("densityPlot"),
+            htmlOutput("compareTable")
+          )
+        )
+      ),
       shiny::tabPanel(
         title = "About",
         icon = icon("info-circle"),
