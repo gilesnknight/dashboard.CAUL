@@ -17,25 +17,43 @@ suburbData <- data.frame(
 
 histParts <- function(GCC){
   if(GCC == "PER"){
-    return(ggplot2::geom_histogram(
+    return(ggiraph::geom_histogram_interactive(
       suburbData[suburbData["GCC"] == "PER",], 
-      mapping = ggplot2::aes(x=PerAnyTree), 
-      binwidth=0.5, fill="transparent",#"#66c2a5", 
-      color="#66c2a5", #alpha=0.46
+      mapping = ggplot2::aes(
+        x=PerAnyTree, 
+        tooltip = base::paste0(
+          "Perth suburbs: ", scales::percent(base::mean(suburbData[suburbData["GCC"] == "PER","PerAnyTree"]),scale = 1, accuracy = 0.1), " (average)"
+          )
+        ), 
+      binwidth=0.5, fill="#66c2a5",#"#66c2a5", 
+      color="#66c2a5", alpha=0.2, lwd = 0.2, 
+      data_id = "Perth"
     ))
   } else if(GCC == "MEL"){
-    return(ggplot2::geom_histogram(
+    return(ggiraph::geom_histogram_interactive(
       suburbData[suburbData["GCC"] == "MEL",], 
-      mapping = ggplot2::aes(x=PerAnyTree), 
-      binwidth=0.5, fill= "transparent",#fc8d62", 
-      color="#fc8d62", #alpha=0.46
+      mapping = ggplot2::aes(
+        x=PerAnyTree, 
+        tooltip = base::paste0(
+          "Melbourne suburbs: ", scales::percent(base::mean(suburbData[suburbData["GCC"] == "MEL","PerAnyTree"]),scale = 1, accuracy = 0.1), " (average)"
+        )
+        ), 
+      binwidth=0.5, fill= "#fc8d62",#fc8d62", 
+      color="#fc8d62", alpha=0.2, lwd = 0.2, 
+      data_id = "Melbourne"
     ))
   } else if(GCC == "SYD"){
-    return(ggplot2::geom_histogram(
+    return(ggiraph::geom_histogram_interactive(
       suburbData[suburbData["GCC"] == "SYD",],
-      mapping = ggplot2::aes(x=PerAnyTree),
-      binwidth=0.5, fill="transparent",#"#8da0cb",
-      color="#8da0cb", #alpha=0.46
+      mapping = ggplot2::aes(
+        x=PerAnyTree, 
+        tooltip = base::paste0(
+          "Sydney suburbs: ", scales::percent(base::mean(suburbData[suburbData["GCC"] == "SYD","PerAnyTree"]),scale = 1, accuracy = 0.1), " (average)"
+        )
+        ),
+      binwidth=0.5, fill="8da0cb",#"#8da0cb",
+      color="#8da0cb", alpha=0.2, lwd = 0.2,
+      data_id = "Sydney"
     ))
   }
 }
@@ -53,8 +71,8 @@ histBrackets <- function(matchingHist, firstHist, secondHist){
     matchingSSChist +
     firstSSChist +
     secondSSChist
-  plotDF <- data.frame(ggplot_build(plotDF)$data[[1]])
-  plotMinMax <- data.frame(
+  plotDF <- base::data.frame(ggplot2::ggplot_build(plotDF)$data[[1]])
+  plotMinMax <- base::data.frame(
     x = plotDF$x,
     xmin = plotDF$xmin,
     xmax = plotDF$xmax
@@ -65,16 +83,108 @@ filterBracket <- function(SSCdata, selectedSSCName, selectedSSCGCC, SSCdataTree,
   filteredBracket <- histBrackets[which.min(abs(SSCdata[SSCdata["SSC_NAME16"] == selectedSSCName,"PerAnyTree"]-histBrackets$x)),]
   filteredBracket <- (SSCdata$GCC==selectedSSCGCC & SSCdataTree >= filteredBracket$xmin & SSCdataTree < filteredBracket$xmax )
 }
-selectedBin <- function(SSCdata, GCC, filteredBracket){
+selectedBin <- function(SSCdata, GCC, filteredBracket, SSCname, SSCtree){
   if(GCC == "PER"){
-    return(ggplot2::geom_histogram(data=SSCdata[filteredBracket,], ggplot2::aes(x=PerAnyTree), fill="#4daf4a", binwidth=0.5))
+    return(
+      ggiraph::geom_histogram_interactive(
+        data=SSCdata[filteredBracket,], 
+        ggplot2::aes(
+          x=PerAnyTree, 
+          tooltip = base::paste0(
+            SSCname,": ",scales::percent(SSCtree, scale = 1, accuracy = 0.1)
+            )
+          ), 
+        fill="#55a189",
+        colour = "#55a189",
+        binwidth=0.5,
+        lwd = 0.25
+        )
+      )
   } else if(GCC == "MEL"){
-    return(ggplot2::geom_histogram(data=SSCdata[filteredBracket,], ggplot2::aes(x=PerAnyTree), fill="#FF9319", binwidth=0.5))
+    return(
+      ggiraph::geom_histogram_interactive(
+        data=SSCdata[filteredBracket,], 
+        ggplot2::aes(
+          x=PerAnyTree, 
+          tooltip = base::paste0(
+            SSCname,": ",scales::percent(SSCtree, scale = 1, accuracy = 0.1)
+            )
+          ), 
+        fill="#e8835a", 
+        colour = "#e8835a",
+        binwidth=0.5,
+        lwd = 0.25
+        )
+      )
   } else if(GCC == "SYD"){
-    return(ggplot2::geom_histogram(data=SSCdata[filteredBracket,], ggplot2::aes(x=PerAnyTree), fill="#377eb8", binwidth=0.5))
+    return(
+      ggiraph::geom_histogram_interactive(
+        data=SSCdata[filteredBracket,], 
+        ggplot2::aes(
+          x=PerAnyTree, 
+          tooltip = base::paste0(
+            SSCname,": ",scales::percent(SSCtree, scale = 1, accuracy = 0.1)
+            )
+          ), 
+        fill="#7389ba", 
+        colour = "#7389ba",
+        binwidth=0.5,
+        lwd = 0.25
+        )
+      )
+  }
+}
+meanParts <- function(GCC){
+  if(GCC == "PER"){
+    return(ggiraph::geom_vline_interactive(
+      xintercept = base::mean(
+        base::mean(suburbData[suburbData["GCC"] == "PER","PerAnyTree"])
+      ), 
+      color ="#66c2a5", 
+      linetype = "dashed",
+      lwd = 0.55
+    ))
+  } else if(GCC == "MEL"){
+    return(ggiraph::geom_vline_interactive(
+      xintercept = base::mean(
+        base::mean(suburbData[suburbData["GCC"] == "MEL","PerAnyTree"])
+      ), 
+      color ="#fc8d62", 
+      linetype = "dashed",
+      lwd = 0.55
+    ))
+  } else if(GCC == "SYD"){
+    return(ggiraph::geom_vline_interactive(
+      xintercept = base::mean(
+        base::mean(suburbData[suburbData["GCC"] == "SYD","PerAnyTree"])
+      ), 
+      color ="#8da0cb", 
+      linetype = "dashed",
+      lwd = 0.55
+    ))
   }
 }
 
+# for(i in 1:52){
+#   BRRR::skrrrahh(i) 
+#   print(i)
+#   Sys.sleep(2)
+#   }
+
+
+
+
+meanSelector <- function(input){
+  if(input == "PER"){
+    return(meanParts(GCC = "PER"))
+  } else if(input == "MEL"){
+    return(meanParts(GCC = "MEL"))
+  } else if(input == "SYD"){
+    return(meanParts(GCC = "SYD"))
+  }
+}
+
+#### UI ####
 ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
@@ -101,17 +211,18 @@ ui <- fluidPage(
         )
       ),
       uiOutput('selectSecondSuburb'),
-      actionButton("histSwitchButton", "Switch")
+      actionButton("histSwitchButton", "Switch"),
+      checkboxInput("meanSwichBox", "Show averages", value = FALSE, width = NULL)
     ),
     mainPanel(
       width = 9,
-     plotOutput("SSChist",
-                height = "calc(100vh - 129px)"
+      ggiraph::girafeOutput("SSChist",
+                            height = "calc(100vh - 129px)"
       )
     )
   )
 )
-
+#### SERVER ####
 server <- function(input, output) {
   
   selectedCity <- shiny::reactiveValues()
@@ -183,6 +294,7 @@ server <- function(input, output) {
   #The following creates a list of suburbs within the selected city, minus the one already selected:
   #suburbData[suburbData["GCC"] == "PER","SSC_NAME16"][suburbData[suburbData["GCC"] == "PER","SSC_NAME16"] != "Nedlands"]
   
+  
   filterSSCname <- function(df, SSCname, selectedSSC){
     filterSSCname <- (df[df[[SSCname]] == selectedSSC, ])
     filterSSCname
@@ -205,9 +317,10 @@ server <- function(input, output) {
   })
   
   histSwitch <- reactiveVal(FALSE)
- 
+  
   observeEvent(input$histSwitchButton, {
-    histSwitch(!histSwitch())
+    histSwitch(
+      !histSwitch() )
   })
   
   histSwitchVal <- reactive({
@@ -217,8 +330,8 @@ server <- function(input, output) {
       FALSE
     }
   })
-
-  output$SSChist <- renderPlot({
+  
+  output$SSChist <- ggiraph::renderGirafe({
     req(selectedSuburb$FirstSuburb)
     req(selectedSuburb$SecondSuburb)
     suburb1Data <- filterSSCname(
@@ -231,7 +344,7 @@ server <- function(input, output) {
       SSCname = 'SSC_NAME16',
       selectedSSC = selectedSuburb$SecondSuburb
     )
-
+    
     histFlip <- histSwitchVal
     
     if(suburb1Data$GCC==suburb2Data$GCC){
@@ -266,35 +379,87 @@ server <- function(input, output) {
       histBrackets = plotMinMax
     )
     
+    # Mean lines
+    if(input$meanSwichBox == FALSE){
+      firstSSCmean <- NULL
+      secondSSCmean <- NULL
+      matchingSSCmean <- NULL
+    } else if(input$meanSwichBox == TRUE){
+      if(suburb1Data$GCC==suburb2Data$GCC){
+        firstSSCmean <- NULL
+        secondSSCmean <- NULL
+        matchingSSCmean <- meanSelector(input = suburb1Data$GCC)
+      } else {
+        matchingSSCmean <- NULL
+        firstSSCmean <- meanSelector(input = suburb1Data$GCC)
+        secondSSCmean <- meanSelector(input = suburb2Data$GCC)
+      }
+    }
+    
     if((suburb1Data$GCC==suburb2Data$GCC)==TRUE & all(suppressWarnings(suburbData[filteredBracket1,'SSC_NAME16'] == suburbData[filteredBracket2,'SSC_NAME16']))==TRUE){
       firstSSChist <- NULL
       secondSSChist <- NULL
-      matchingSSChist <- list(matchingSSChist, selectedBin(SSCdata = suburbData, filteredBracket = filteredBracket1, GCC = suburb1Data$GCC))
+      matchingSSChist <- list(matchingSSChist, matchingSSCmean, selectedBin(SSCdata = suburbData, filteredBracket = filteredBracket1, GCC = suburb1Data$GCC, SSCname = suburb1Data$SSC_NAME16, SSCtree = suburb1Data$PerAnyTree))
     }
     
     firstSSChist <- list(firstSSChist,
-                         selectedBin(SSCdata = suburbData, filteredBracket = filteredBracket1, GCC = suburb1Data$GCC)
+                         firstSSCmean,
+                         selectedBin(SSCdata = suburbData, filteredBracket = filteredBracket1, GCC = suburb1Data$GCC, SSCname = suburb1Data$SSC_NAME16, SSCtree = suburb1Data$PerAnyTree)
     )
     secondSSChist <- list(secondSSChist,
-                          selectedBin(SSCdata = suburbData, filteredBracket = filteredBracket2, GCC = suburb2Data$GCC)
+                          secondSSCmean,
+                          selectedBin(SSCdata = suburbData, filteredBracket = filteredBracket2, GCC = suburb2Data$GCC, SSCname = suburb2Data$SSC_NAME16, SSCtree = suburb2Data$PerAnyTree)
     )
-
+    
     if(histFlip() == FALSE){
       differentSSChist <- list(firstSSChist,secondSSChist)
     } else{
       differentSSChist <- list(secondSSChist, firstSSChist)
     }
     
-    ggplot2::ggplot() +
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    plot <- ggplot2::ggplot() +
       matchingSSChist +
       differentSSChist +
-      ggplot2::theme_light()
+      ggplot2::labs(x = "Tree canopy cover (%)", y = "Number of suburbs") +
+      ggplot2::scale_y_continuous(
+        expand = c(0,0)
+        #limits=c(0, 30)
+      ) +
+      ggplot2::scale_x_continuous(
+        expand = c(0,0), 
+        #limits=c(-1, 100),
+        labels = scales::percent_format(scale = 1,accuracy = 1)) +
+      ggplot2::theme_classic() +
+      ggplot2::theme(
+        axis.text.x = ggplot2::element_text(colour = "black"),
+        axis.text.y = ggplot2::element_text(colour = "black")
+      )
+    girafe <- ggiraph::girafe(
+      ggobj = plot,
+      fonts = list(serif = "Helvetica"),
+      options = list(#ggiraph::opts_hover_inv(css = "fill:transparent;stroke:transparent;"),
+                     ggiraph::opts_hover(css = 'stroke-width:0.5pt;'),
+                     ggiraph::opts_sizing(rescale = TRUE, width = 1),
+                     ggiraph::opts_toolbar(saveaspng = FALSE)
+                     )
+    )
     
+    girafe
   })
   
-  }
+}
 
 shinyApp(ui = ui, server = server)
+
 
 
 
